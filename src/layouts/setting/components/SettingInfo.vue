@@ -88,7 +88,6 @@
         <el-switch v-model="state.actionItem.showFullScreen" />
       </div>
       <el-divider />
-<!--      <Contact style="margin-bottom: 25%" />-->
     </el-card>
   </el-drawer>
 </template>
