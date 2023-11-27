@@ -28,15 +28,15 @@ export default {
       type: Array,
       default: () => [
         {
-          avatar: require('@/assets/img_avatar_01.jpeg'),
+          avatar: require('@/assets/img_avatar_default.png'),
           name: '悟空'
         },
         {
-          avatar: require('@/assets/img_avatar_02.jpeg'),
+          avatar: require('@/assets/img_avatar_default.png'),
           name: '唐僧'
         },
         {
-          avatar: require('@/assets/img_avatar_example.gif'),
+          avatar: require('@/assets/img_avatar_default.png'),
           name: '哈哈'
         }
       ]

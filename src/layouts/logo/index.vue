@@ -12,7 +12,7 @@
       <span
         v-show="!state.isCollapse || alwaysShow"
         class="logo-title"
-      >vue-admin-work</span>
+      >智能运维云平台</span>
     </transition>
   </div>
 </template>

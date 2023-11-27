@@ -1,7 +1,7 @@
 {
-  "name": "vue-admin-work",
+  "name": "constructionSite",
   "version": "v2.0.1",
-  "author": "qingqingxunan <353087890@qq.com>",
+  "author": "",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

@@ -3,7 +3,7 @@
     Copyright <i
       class="iconfont"
       style="margin: 0 5px"
-    >&#xe619;</i> Vue-Admin-Work 2021
+    >&#xe619;</i> SHANDONG CABLE TV
   </div>
 </template>
 

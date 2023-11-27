@@ -13,7 +13,7 @@
           <div class="logo-wrapper">
             <img :src="require('@/assets/work_logo.png')" />
           </div>
-          <div class="title margin-left">Vue Admin Work</div>
+          <div class="title margin-left">威海广电智能运维云平台</div>
         </div>
         <div class="form-container">
           <div class="item-wrapper">
@@ -51,12 +51,13 @@
           </div>
         </div>
         <div class="my-width flex-sub margin-top">
-          <div class="flex justify-between">
+          <div class="flex justify-between" style="display: none">
             <el-checkbox v-model="autoLogin">自动登录</el-checkbox>
             <el-link
               :underline="false"
               type="primary"
-            >忘记密码？</el-link>
+            >忘记密码？
+            </el-link>
           </div>
         </div>
       </div>
@@ -68,11 +69,12 @@
 </template>
 
 <script>
-import ImageBg1 from '@/assets/img_login_bg_01.jpg'
-import ImageMobileBg1 from '@/assets/img_login_mobile_bg_01.jpg'
+import ImageBg1 from '@/assets/img_login_bg_01.png'
+import ImageMobileBg1 from '@/assets/img_login_mobile_bg_01.png'
 import PageFooter from '@/layouts/footer'
 import VawVerify from 'vaw-verify'
 import 'vaw-verify/lib/vaw-verify.css'
+
 export default {
   name: 'Login',
   components: { PageFooter, VawVerify },
@@ -128,6 +130,7 @@ export default {
         }
       })
         .then((res) => {
+          debugger
           this.$store
             .dispatch('user/saveUserInfo', res.data)
             .then((_) => {
@@ -154,37 +157,40 @@ export default {
   overflow: hidden;
   height: 100%;
   width: 100%;
+
   .login-bg-wrapper {
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
+
     & > img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
   }
+
   .logo-wrapper {
     & img {
       width: 50px;
     }
-    & img::after {
-      content: "欢迎来到vue-admin-work";
-    }
   }
+
   .login-footer-wrapper {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
+
     ::v-deep {
       .el-card {
         background-color: transparent;
       }
     }
   }
+
   .form-wrapper {
     position: absolute;
     top: 18.5%;
@@ -201,9 +207,11 @@ export default {
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
+
         .my-width {
           width: 80%;
         }
+
         .title {
           display: block;
           text-align: center;
@@ -212,6 +220,7 @@ export default {
           color: #34495e;
           text-shadow: 0 0 0.2em #41b883, -0 -0 0.2em #41b883;
         }
+
         .form-container {
           width: 80%;
           min-height: 60%;
@@ -223,16 +232,18 @@ export default {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+
           .item-wrapper {
             width: 100%;
           }
+
           .login {
             width: 100%;
           }
         }
       }
     }
-    @media screen and (min-width: 768px) and (max-width: 992px) {
+    @media screen and (min-width: 768px) {
       .left {
         display: none;
       }
@@ -242,9 +253,11 @@ export default {
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
+
         .my-width {
           width: 48%;
         }
+
         .title {
           display: block;
           text-align: center;
@@ -252,52 +265,27 @@ export default {
           font-weight: bold;
           color: #5497ff;
         }
+
         .form-container {
-          width: 50%;
+          width: 24%;
           height: 60%;
           margin-bottom: 10%;
           text-align: center;
           background: rgba(183, 183, 183, 0.2);
-          padding: 5%;
+          padding: 30px 15px 15px;
           border-radius: 5px;
           border: 2px solid #fff;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+
           .item-wrapper {
             width: 100%;
           }
+
           .login {
             width: 100%;
           }
-        }
-      }
-    }
-    @media screen and (min-width: 992px) {
-      .left {
-        display: block;
-        flex: 1;
-      }
-      .right {
-        margin-left: 10%;
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        .my-width {
-          width: 48%;
-        }
-        .title {
-          display: block;
-          font-size: 24px;
-          font-weight: bold;
-          color: #5497ff;
-        }
-        .item-wrapper {
-          width: 48%;
-        }
-        .login {
-          width: 48%;
         }
       }
     }

@@ -5,7 +5,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/vue-admin-work' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: true,
@@ -41,5 +41,10 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
       .end()
+    config.plugin('html')
+      .tap(args => {
+        args[0].title = 'constructionSite'
+        return args
+      })
   }
 }

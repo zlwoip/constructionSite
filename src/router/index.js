@@ -3,8 +3,6 @@ import VueRouter from 'vue-router'
 
 import { Layout } from '@/layouts/index'
 
-import NextPageInfo from './next-page/routes'
-
 Vue.use(VueRouter)
 
 const originalPush = VueRouter.prototype.push
@@ -14,7 +12,6 @@ VueRouter.prototype.push = function push(location, onResolve, onReject) {
 }
 
 export const routes = [
-  ...NextPageInfo,
   {
     path: '/redirect',
     component: Layout,
@@ -60,7 +57,7 @@ export const routes = [
     component: Layout,
     hidden: false,
     meta: {
-      title: 'Dashboard',
+      title: '仪表面板',
       icon: 'dashboard'
     },
     children: [
