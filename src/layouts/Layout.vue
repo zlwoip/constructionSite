@@ -29,10 +29,11 @@
       @click="closeMenu"
     ></div>
     <SettingInfo ref="settingInfo" />
-<!--    <Setting-->
-<!--      @open-drawer="openSettingDrawer"-->
-<!--      @open-source="openSource"-->
-<!--    />-->
+    <Setting
+      style="display:none;"
+      @open-drawer="openSettingDrawer"
+      @open-source="openSource"
+    />
   </div>
 </template>
 

@@ -4,25 +4,17 @@ import { baseData } from '../base'
 
 export const adminRoutes = [
   {
-    menuUrl: '/list',
-    menuName: '列表页面',
+    menuUrl: '/inspection',
+    menuName: '设备巡检',
     icon: 'list',
     children: [
       {
-        menuUrl: '/list/table',
-        menuName: '表格'
+        menuUrl: '/inspection/switchboard',
+        menuName: '交换机巡检'
       },
       {
-        menuUrl: '/list/table-with-search',
-        menuName: '表格搜索'
-      },
-      {
-        menuUrl: '/list/table-custom',
-        menuName: '自定义表格'
-      },
-      {
-        menuUrl: '/list/grid-list',
-        menuName: '卡片列表'
+        menuUrl: '/inspection/ups/index',
+        menuName: 'UPS巡检'
       }
     ]
   },
