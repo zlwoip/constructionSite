@@ -9,7 +9,7 @@ export const adminRoutes = [
     icon: 'list',
     children: [
       {
-        menuUrl: '/inspection/switchboard',
+        menuUrl: '/inspection/switchboard/index',
         menuName: '交换机巡检'
       },
       {

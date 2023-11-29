@@ -43,7 +43,7 @@ module.exports = {
       .end()
     config.plugin('html')
       .tap(args => {
-        args[0].title = 'constructionSite'
+        args[0].title = '智能运维云平台'
         return args
       })
   }
