@@ -4,10 +4,15 @@
       <el-card :body-style="{padding: '0'}" shadow="never">
         <div class="wrapper">
           <div class="left-wrapper">
-            <span class="label">当前数据获取时间: </span>
-            <span>{{ dataTime }}</span>
+            <span class="label">数据检索条件:</span>
+            <el-input v-model="query.ip" clearable size="mini" placeholder="请输入交换机IP" style="width: 180px;margin:0 5px" />
+            <el-input v-model="query.port" clearable size="mini" placeholder="请输入交换机端口" style="width: 180px;margin:0 5px" />
+            <el-input v-model="query.address" clearable size="mini" placeholder="请输入端口对应地址" style="width: 180px;margin:0 5px" />
           </div>
-          <div class="flex-sub"></div>
+          <div class="flex-sub">
+            <el-button type="primary" size="mini" icon="el-icon-magic-stick">过滤</el-button>
+            <el-button size="mini" icon="el-icon-refresh-left">重置</el-button>
+          </div>
           <div class="right-wrapper">
             <el-button type="primary" size="mini" icon="el-icon-download" @click="loadData">拉取数据</el-button>
             <el-button type="success" size="mini" icon="el-icon-setting" @click="toSetting">监听设置</el-button>
@@ -19,7 +24,14 @@
       <div class="wrapper">
         <div class="table-card-box">
           <div class="table-card-title">
-            本次巡检共检测到<span style="color:#191970;"> 126 </span>个环网终端，端口数据<span style="color:#0000CD;"> 428 </span>条，有效数据<span style="color:#008B00;"> 413 </span>条，异常数据<span :class="errorNum?'underline touch':'underline'" :title="errorNum?'点击查看异常清单':''" :style="{color: errorNum?'red':'#00CD66'}" @click="openErrorLog()"> {{ errorNum }} </span>条
+            <el-row>
+              <el-col :span="20" style="padding-left: 18px">
+                本次巡检共检测到<span style="color:#191970;"> 126 </span>个环网终端，端口数据<span style="color:#0000CD;"> 428 </span>条，有效数据<span style="color:#008B00;"> 413 </span>条，异常数据<span :class="errorNum?'underline touch':'underline'" :title="errorNum?'点击查看异常清单':''" :style="{color: errorNum?'red':'#00CD66'}" @click="openErrorLog()"> {{ errorNum }} </span>条
+              </el-col>
+              <el-col :span="4" style="text-align: right">
+                <span style="padding-right:18px; font-size: 16px;color: #666">{{ dataTime }}</span>
+              </el-col>
+            </el-row>
           </div>
           <table>
             <tr class="bk">
@@ -2481,7 +2493,48 @@ export default {
     return {
       dataTime: '',
       errorNum: 3,
-      tableList: []
+      query: {
+        ip: '',
+        port: '',
+        address: ''
+      },
+      tableList: [
+        {
+          name: 'IPTV环网-威海7503',
+          ip: '10.253.174.240',
+          errorNum: 0,
+          portList: [
+            { port: 'XGE0/0/25', address: '威海6520', input: -5.19, output: -1.78 },
+            { port: 'XGE1/0/25', address: '威海6520', input: -5.19, output: -1.78 },
+            { port: 'GE0/0/3', address: '荣成6520', input: -5.19, output: -1.78 },
+            { port: 'GE0/0/1', address: '荣成6520', input: -5.19, output: -1.78 },
+            { port: 'XGE2/0/2', address: '文登6520', input: -5.19, output: -1.78 },
+            { port: 'XGE2/0/1', address: '乳山6520', input: -5.19, output: -1.78 }
+          ]
+        }, {
+          name: 'IPTV环网-文登6520',
+          ip: '10.253.174.225',
+          errorNum: 0,
+          portList: [
+            { port: 'XGE1/0/6', address: '威海7503', input: -5.19, output: -1.78 },
+            { port: 'XGE1/0/22', address: '荣成6520', input: -5.19, output: -1.78 },
+            { port: 'XGE1/0/21', address: '乳山6520', input: -5.19, output: -1.78 },
+            { port: 'XGE1/0/23', address: '文登7604', input: -5.19, output: -1.78 },
+            { port: 'XGE1/0/24', address: '文登7604', input: -5.19, output: -1.78 }
+          ]
+        }, {
+          name: 'IPTV环网-荣成6520',
+          ip: '10.253.174.193',
+          errorNum: 0,
+          portList: [
+            { port: 'XGE1/0/1', address: '威海7503', input: -5.19, output: -1.78 },
+            { port: 'XGE1/0/9', address: '威海7503', input: -5.19, output: -1.78 },
+            { port: 'XGE1/0/22', address: '文登6520', input: -5.19, output: -1.78 },
+            { port: 'XGE1/0/23', address: '荣成7604', input: -5.19, output: -1.78 },
+            { port: 'XGE1/0/24', address: '荣成7604', input: -5.19, output: -1.78 }
+          ]
+        }
+      ]
     }
   },
   mounted() {
@@ -2499,6 +2552,12 @@ export default {
       if (this.errorNum) {
         this.$refs.errorLogPage.loadData()
       }
+    },
+    search() {},
+    resetSearch() {
+      this.query.ip = ''
+      this.query.port = ''
+      this.query.address = ''
     },
     toSetting() {
       this.$refs.settingPage.loadData()
