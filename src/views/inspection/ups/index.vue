@@ -2,7 +2,7 @@
   <div class="main-container">
     <div class="table-header-container">
       <el-card :body-style="{padding: '0'}" shadow="never">
-        <div class="wrapper">
+        <div class="wrapper" :style="{background:waterMark?`url(${waterMark.toDataURL('image/png')}) left top repeat`:``}">
           <div class="left-wrapper">
             <span class="label">检索时间范围:</span>
             <el-date-picker
@@ -26,7 +26,7 @@
       </el-card>
     </div>
     <el-card :body-style="{padding: 0}" class="table-container" shadow="never">
-      <div class="wrapper">
+      <div class="wrapper" :style="{background:waterMark?`url(${waterMark.toDataURL('image/png')}) left top repeat`:``}">
         <el-timeline>
           <el-timeline-item v-for="(item,index) in tableList" :key="'tm_'+index" :timestamp="item.dateTime" placement="top">
             <el-card v-if="item.completed">
@@ -152,6 +152,7 @@ export default {
   components: { editPage, errorLog, settingPage },
   data() {
     return {
+      waterMark: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近24小时',
@@ -272,6 +273,17 @@ export default {
       // const start = new Date()
       // start.setTime(start.getTime() - 3600 * 1000 * 24)
       // this.timeList = [start, end]
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      canvas.width = canvas.height = 160
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.globalAlpha = 0.08
+      ctx.font = '20px Microsoft Yahei'
+      ctx.translate(80, 80)
+      ctx.rotate(-Math.PI / 4)
+      ctx.fillText(`威海广电网络`, 0, 0)
+      this.waterMark = canvas
     })
   },
   methods: {

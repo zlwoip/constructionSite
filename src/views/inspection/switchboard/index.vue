@@ -239,14 +239,14 @@ export default {
       this.tableList = this.dataList
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
-      canvas.width = canvas.height = 100
+      canvas.width = canvas.height = 160
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.globalAlpha = 0.08
       ctx.font = '20px Microsoft Yahei'
-      ctx.translate(50, 50)
+      ctx.translate(80, 80)
       ctx.rotate(-Math.PI / 4)
-      ctx.fillText(this.dateTime.split(' ')[0], 0, 0)
+      ctx.fillText(`威海广电网络`, 0, 0)
       this.waterMark = canvas
     })
   },
