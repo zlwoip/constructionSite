@@ -130,7 +130,6 @@ export default {
         }
       })
         .then((res) => {
-          debugger
           this.$store
             .dispatch('user/saveUserInfo', res.data)
             .then((_) => {

@@ -267,10 +267,12 @@ export default {
     }
   },
   mounted() {
-    // const end = new Date()
-    // const start = new Date()
-    // start.setTime(start.getTime() - 3600 * 1000 * 24)
-    // this.timeList = [start, end]
+    this.$nextTick(() => {
+      // const end = new Date()
+      // const start = new Date()
+      // start.setTime(start.getTime() - 3600 * 1000 * 24)
+      // this.timeList = [start, end]
+    })
   },
   methods: {
     expandTable(item) {

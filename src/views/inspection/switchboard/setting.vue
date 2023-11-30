@@ -10,96 +10,37 @@
     width="590px"
   >
     <el-form ref="formViewRef" :model="formData" :rules="rules" size="mini" :status-icon="true" label-width="180px">
-      <el-form-item label="三相输入电压：" class="form-cell" style="margin: 0;padding: 0">
+      <el-form-item label="接收光功率：" class="form-cell" style="margin: 0;padding: 0">
         <div class="cell-box" style="display: flex">
           <el-form-item prop="minInputTPE">
-            <el-input v-model.number="formData.minInputTPE" size="mini" placeholder="阈值下限" class="cell-input">
+            <el-input v-model.number="formData.minInputOP" size="mini" placeholder="阈值下限" class="cell-input">
               <template slot="append">下限 V</template>
             </el-input>
           </el-form-item>
           <div style="width: 20px;text-align: center">~</div>
           <el-form-item prop="maxInputTPE">
-            <el-input v-model.number="formData.maxInputTPE" size="mini" placeholder="阈值上限" class="cell-input">
+            <el-input v-model.number="formData.maxInputOP" size="mini" placeholder="阈值上限" class="cell-input">
               <template slot="append">上限 V</template>
             </el-input>
           </el-form-item>
         </div>
       </el-form-item>
-      <el-form-item label="三相输出电压：" class="form-cell" style="margin: 0;padding: 0">
+      <el-form-item label="输出光功率：" class="form-cell" style="margin: 0;padding: 0">
         <div class="cell-box" style="display: flex">
           <el-form-item prop="minOutputTPE">
-            <el-input v-model.number="formData.minOutputTPE" size="mini" placeholder="阈值下限" class="cell-input">
+            <el-input v-model.number="formData.minOutputOP" size="mini" placeholder="阈值下限" class="cell-input">
               <template slot="append">下限 V</template>
             </el-input>
           </el-form-item>
           <div style="width: 20px;text-align: center">~</div>
           <el-form-item prop="maxOutputTPE">
-            <el-input v-model.number="formData.maxOutputTPE" size="mini" placeholder="阈值上限" class="cell-input">
+            <el-input v-model.number="formData.maxOutputOP" size="mini" placeholder="阈值上限" class="cell-input">
               <template slot="append">上限 V</template>
             </el-input>
           </el-form-item>
         </div>
       </el-form-item>
-      <el-form-item label="设备温度：" class="form-cell" style="margin: 0;padding: 0">
-        <div class="cell-box" style="display: flex">
-          <el-form-item prop="minHeat">
-            <el-input v-model.number="formData.minHeat" size="mini" placeholder="阈值下限" class="cell-input">
-              <template slot="append">下限℃</template>
-            </el-input>
-          </el-form-item>
-          <div style="width: 20px;text-align: center">~</div>
-          <el-form-item prop="maxHeat">
-            <el-input v-model.number="formData.maxHeat" size="mini" placeholder="阈值上限" class="cell-input">
-              <template slot="append">上限℃</template>
-            </el-input>
-          </el-form-item>
-        </div>
-      </el-form-item>
-      <el-form-item label="标准输出电压：" class="form-cell" style="margin: 0;padding: 0">
-        <div class="cell-box" style="display: flex">
-          <el-form-item prop="minOutputPE">
-            <el-input v-model.number="formData.minOutputPE" size="mini" placeholder="阈值下限" class="cell-input">
-              <template slot="append">下限 V</template>
-            </el-input>
-          </el-form-item>
-          <div style="width: 20px;text-align: center">~</div>
-          <el-form-item prop="maxOutputPE">
-            <el-input v-model.number="formData.maxOutputPE" size="mini" placeholder="阈值上限" class="cell-input">
-              <template slot="append">上限 V</template>
-            </el-input>
-          </el-form-item>
-        </div>
-      </el-form-item>
-      <el-form-item label="标准输出电压：" class="form-cell" style="margin: 0;padding: 0">
-        <div class="cell-box" style="display: flex">
-          <el-form-item prop="minOutputPE">
-            <el-input v-model.number="formData.minOutputPE" size="mini" placeholder="阈值下限" class="cell-input">
-              <template slot="append">下限 V</template>
-            </el-input>
-          </el-form-item>
-          <div style="width: 20px;text-align: center">~</div>
-          <el-form-item prop="maxOutputPE">
-            <el-input v-model.number="formData.maxOutputPE" size="mini" placeholder="阈值上限" class="cell-input">
-              <template slot="append">上限 V</template>
-            </el-input>
-          </el-form-item>
-        </div>
-      </el-form-item>
-      <el-form-item label="设备负载：" class="form-cell" style="margin: 0;padding: 0">
-        <div class="cell-box" style="display: flex">
-          <el-form-item prop="minLoad">
-            <el-input v-model.number="formData.minLoad" size="mini" placeholder="阈值下限" class="cell-input">
-              <template slot="append">下限 %</template>
-            </el-input>
-          </el-form-item>
-          <div style="width: 20px;text-align: center">~</div>
-          <el-form-item prop="maxLoad">
-            <el-input v-model.number="formData.maxLoad" size="mini" placeholder="阈值上限" class="cell-input">
-              <template slot="append">上限 %</template>
-            </el-input>
-          </el-form-item>
-        </div>
-      </el-form-item>
+
     </el-form>
     <div slot="footer" class="dialog-footer" style="text-align: center">
       <el-button size="mini" icon="el-icon-circle-close" @click="cancelView">关闭</el-button>
@@ -116,18 +57,10 @@ export default {
       visible: false,
       title: '监听设置',
       formData: {
-        minInputTPE: 380,
-        maxInputTPE: 420,
-        minOutputTPE: 380,
-        maxOutputTPE: 420,
-        minInputPE: 210,
-        maxInputPE: 230,
-        minOutputPE: 210,
-        maxOutputPE: 230,
-        minHeat: 0,
-        maxHeat: 100,
-        minLoad: 0,
-        maxLoad: 100
+        minInputOP: -999,
+        maxInputOP: -3.5,
+        minOutputOP: -999,
+        maxOutputOP: -1.69
       },
       rules: {
 

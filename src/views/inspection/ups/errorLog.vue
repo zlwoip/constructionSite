@@ -107,7 +107,7 @@ export default {
   data() {
     return {
       visible: false,
-      title: '巡检日志',
+      title: '',
       nodelist0: [],
       nodelist1: [
         { org: '环翠分公司', name: '中信苑', heat: 66, input: 225, output: 219, load: 14, remarks: '温度过高' },
@@ -133,7 +133,7 @@ export default {
     },
     loadData(obj) {
       this.dataObj = obj
-      this.title = `巡检日志-${obj.dateTime}`
+      this.title = `UPS异常巡检日志 - ${obj.dateTime}`
       this.showView()
     }
   }

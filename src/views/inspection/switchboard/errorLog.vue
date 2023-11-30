@@ -9,91 +9,27 @@
     top="20vh"
     width="960px"
   >
-    <div v-if="dataObj.errorNum">
-      <div v-if="nodelist0.length" class="table-card-box">
-        <div class="table-card-title">总前端120KVA-UPS系统</div>
+    <div v-for="(iptv, i) in tableList" :key="'iptv_'+i" class="table-card-box" style="margin-bottom: 16px">
+      <div class="table-card-title">
+        <span>{{ iptv.name }}</span>
+        <span style="float: right;color: #999999;font-size: 14px">IP: {{ iptv.ip }} </span>
+      </div>
+      <div style="padding-top:8px">
         <table class="table">
           <tr class="tr">
-            <th class="th">电源</th>
-            <th class="th">温度 (℃)</th>
-            <th class="th">输入电压A (V)</th>
-            <th class="th">输入电压B (V)</th>
-            <th class="th">输入电压C (V)</th>
-            <th class="th">输出电压A (V)</th>
-            <th class="th">输出电压B (V)</th>
-            <th class="th">输出电压C (V)</th>
-            <th class="th">负载A (%)</th>
-            <th class="th">负载B (%)</th>
-            <th class="th">负载C (%)</th>
+            <th class="th">端口</th>
+            <th class="th">对应地址</th>
+            <th class="th">接收光功率</th>
+            <th class="th">输出光功率</th>
           </tr>
-          <tr v-for="(n0, i0) in nodelist0" :key="'n_'+'_'+i0" class="tr">
-            <td class="td">{{ n0.name }}</td>
-            <td class="td">{{ n0.heat }}</td>
-            <td class="td">{{ n0.inputA }}</td>
-            <td class="td">{{ n0.inputB }}</td>
-            <td class="td">{{ n0.inputC }}</td>
-            <td class="td">{{ n0.outputA }}</td>
-            <td class="td">{{ n0.outputB }}</td>
-            <td class="td">{{ n0.outputC }}</td>
-            <td class="td">{{ n0.loadA }}</td>
-            <td class="td">{{ n0.loadB }}</td>
-            <td class="td">{{ n0.loadC }}</td>
+          <tr v-for="(port, ii) in iptv.portList" :key="'p_'+i+'_'+ii" class="tr">
+            <td>{{ port.port }}</td>
+            <td>{{ port.address }}</td>
+            <td :class="port.input>-3.5?'warn':''">{{ port.input }}</td>
+            <td :class="port.output>-1.69?'warn':''">{{ port.output }}</td>
           </tr>
         </table>
       </div>
-      <div v-if="nodelist1.length" class="table-card-box">
-        <div class="table-card-title">一级分前端10KVA-UPS系统</div>
-        <table class="table">
-          <tr class="tr">
-            <th class="th">分公司</th>
-            <th class="th">分前端</th>
-            <th class="th">温度 (℃)</th>
-            <th class="th">输入电压 (V)</th>
-            <th class="th">输出电压 (V)</th>
-            <th class="th">负载 (%)</th>
-            <th class="th">异常原因</th>
-          </tr>
-          <tr v-for="(n1, i1) in nodelist1" :key="'n_'+'_'+i1" class="tr">
-            <td class="td">{{ n1.org }}</td>
-            <td class="td">{{ n1.name }}</td>
-            <td :class="n1.heat>50?'td warn':'td'">{{ n1.heat }}</td>
-            <td :class="n1.input<225?'td warn':'td'">{{ n1.input }}</td>
-            <td :class="n1.output<50?'td warn':'td'">{{ n1.output }}</td>
-            <td :class="n1.load>50?'td warn':'td'">{{ n1.load }}</td>
-            <td class="td">{{ n1.remarks }}</td>
-          </tr>
-        </table>
-      </div>
-      <div v-if="nodelist2.length" class="table-card-box">
-        <div class="table-card-title">二级分前端及乡镇广播站10KVA-UPS系统</div>
-        <table class="table">
-          <tr class="tr">
-            <th class="th">分公司</th>
-            <th class="th">分前端</th>
-            <th class="th">温度 (℃)</th>
-            <th class="th">输入电压 (V)</th>
-            <th class="th">输出电压 (V)</th>
-            <th class="th">负载 (%)</th>
-            <th class="th">异常原因</th>
-          </tr>
-          <tr v-for="(n2, i2) in nodelist2" :key="'n_'+'_'+i2" class="tr">
-            <td class="td">{{ n2.org }}</td>
-            <td class="td">{{ n2.name }}</td>
-            <td :class="n2.heat>50?'td warn':'td'">{{ n2.heat }}</td>
-            <td :class="n2.input<225?'td warn':'td'">{{ n2.input }}</td>
-            <td :class="n2.output<50?'td warn':'td'">{{ n2.output }}</td>
-            <td :class="n2.load>50?'td warn':'td'">{{ n2.load }}</td>
-            <td class="td">{{ n2.remarks }}</td>
-          </tr>
-        </table>
-      </div>
-    </div>
-    <div v-else style="text-align: center;font-size: 20px;font-weight: bold">
-      一切正常 <i class="el-icon-success" style="color:#00CD66"></i>
-    </div>
-    <div class="signArea">
-      <span>巡检员签字：</span>
-      <img class="signImg" :src="require('@/assets/signImg.png')" />
     </div>
     <div slot="footer" class="dialog-footer" style="text-align: center">
       <el-button size="mini" icon="el-icon-circle-close" @click="cancelView">关闭</el-button>
@@ -107,14 +43,27 @@ export default {
   data() {
     return {
       visible: false,
-      title: '巡检日志',
-      nodelist0: [],
-      nodelist1: [
-        { org: '环翠分公司', name: '中信苑', heat: 66, input: 225, output: 219, load: 14, remarks: '温度过高' },
-        { org: '环翠分公司', name: '望岛机房', heat: 23, input: 225, output: 219, load: 88, remarks: '负载过高' }
-      ],
-      nodelist2: [
-        { org: '高区分公司', name: '电视台机房', heat: 23, input: 220, output: 207, load: 14, remarks: '输入电压不稳' }
+      title: '',
+      tableList: [
+        {
+          name: 'IPTV环网-威海7503',
+          ip: '10.253.174.240',
+          ups: '电源正常',
+          errorNum: 0,
+          portList: [
+            { port: 'XGE0/0/25', address: '威海6520', input: -2.99, output: -0.97 },
+            { port: 'XGE2/0/1', address: '乳山6520', input: -5.19, output: -1.66 }
+          ]
+        },
+        {
+          name: 'IPTV环网-文登6520',
+          ip: '10.253.174.225',
+          ups: '暂不支持',
+          errorNum: 0,
+          portList: [
+            { port: 'XGE1/0/24', address: '文登7604', input: -3.47, output: -1.78 }
+          ]
+        }
       ],
       dataObj: {}
     }
@@ -132,8 +81,7 @@ export default {
       this.hideView()
     },
     loadData(obj) {
-      this.dataObj = obj
-      this.title = `巡检日志-${obj.dateTime}`
+      this.title = `交换机异常巡检日志 - ${obj.dateTime}`
       this.showView()
     }
   }
@@ -144,49 +92,92 @@ export default {
 .warn {
   color: red;
 }
-.signArea {
-  margin-top: -20px;
-  padding: 0 80px;
-  font-size: 16px;
-  font-weight: bold;
-  .signImg {
+.box-card {
+  display: inline-block;
+  position: relative;
+  margin: 6px 12px;
+  padding: 10px 6px;
+  width: 48%;
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.12);
+  box-shadow: 1px 2px 8px 0 rgba(0,0,0,0.12);
+  border-radius: 10px;
+  .line-title {
+    padding: 0;
     position: relative;
-    top: 30px;
-    left: 10px;
-    height: 75px;
+    border-bottom: 3px solid #0457C7;
+    font-size: 16px;
+    color: #333333;
+    .title-point {
+      position: absolute;
+      top: 1px;
+    }
+    .title-lable {
+      padding-left: 26px;
+      font-weight: bolder;
+    }
+    .title-ip {
+      float: right;
+      padding-right: 5px;
+      color: #999999;
+      font-size: 14px;
+      img {
+        position: relative;
+        top: 3px;
+      }
+    }
+    .title-ups {
+      float: right;
+      padding-right: 20px;
+      color: #999999;
+      font-size: 14px;
+      img {
+        position: relative;
+        top: 3px;
+      }
+    }
+    .title-line{
+      width: 100%;
+      position: absolute;
+      bottom: -7px;
+      border-bottom: 2px solid #1961C5;
+      opacity: 0.35
+    }
   }
 }
 .table-card-box {
   .table-card-title {
     width: 100%;
     padding: 2px;
-    margin-bottom: 10px;
-    text-align: center;
+    color: #4e4e4e;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
     background-color: rgba(0,0,0,0.1);
+    span {
+      font-size: 16px;
+      padding: 0 10px;
+    }
   }
-
-  .table {
+  table {
     border-collapse: collapse;
     width: 100%;
-    margin-bottom: 20px;
     text-align: left;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   }
-
-  .th, .td {
+  th, td {
     border: 1px solid #ddd;
     padding: 8px;
     border-radius: 5px;
     text-align: center;
   }
-
-  .th {
-    background-color: #f2f2f2;
+  th {
+    background-color: #e2e2e2;
     font-weight: bold;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+  .bk {
+    background-color: #f2f2f2;
   }
 }
 .cell-box {
