@@ -20,7 +20,7 @@
           </div>
           <div class="right-wrapper">
             <el-button type="primary" size="mini" icon="el-icon-plus" @click="toAdd">新增巡检</el-button>
-            <el-button type="success" size="mini" icon="el-icon-setting" @click="toSetting">监听设置</el-button>
+            <el-button type="warning" size="mini" icon="el-icon-setting" @click="toSetting">监听设置</el-button>
           </div>
         </div>
       </el-card>
@@ -37,8 +37,8 @@
                 <i v-if="item.errorNum>0" class="el-icon-warning" style="color:#FF8C00"></i>
               </div>
               <div class="expand-btn touch" @click="expandTable(item)">
-                <span v-if="item.expand">收起 <i class="el-icon-d-arrow-right" style="transform: rotate(90deg)"></i></span>
-                <span v-else>展开 <i class="el-icon-d-arrow-right"></i></span>
+                <span v-if="item.expand" title="收起">收起 <i class="el-icon-d-arrow-right" style="transform: rotate(90deg)"></i></span>
+                <span v-else title="点击查看巡检报告">展开 <i class="el-icon-d-arrow-right"></i></span>
               </div>
               <img class="signImg" :src="require('@/assets/signImg.png')" />
               <p>本次巡检共发现
@@ -131,7 +131,87 @@
             <el-card v-else>
               <div style="font-size: 16px;color: #999999">
                 <span style="font-size: 20px;font-weight: bold;color: black">{{ item.name }}</span>
-                正在巡检中...
+                <span v-if="item.status===1"> 等待巡检... </span>
+                <span v-if="item.status===2"> 正在巡检中... </span>
+                <span v-if="item.status===3"> 请<span style="font-weight:bold;color:#666">确认</span>后<span style="font-weight:bold;color:#666">提交</span>该报告！ </span>
+                <el-button v-if="item.status===1" type="primary" size="mini" icon="el-icon-video-play" style="float:right;margin:0 20px" @click="beginInspection(item)">开始巡检</el-button>
+                <el-button v-if="item.status===2" disabled size="mini" icon="el-icon-loading" style="float:right;margin:0 20px">巡检中...</el-button>
+                <el-button v-if="item.status===3" type="success" size="mini" icon="el-icon-finished" style="float:right;margin:0 20px" @click="submitInspection(item)">确认提交</el-button>
+              </div>
+              <div v-show="item.expand" style="margin-top:12px">
+                <div class="table-card-box">
+                  <div class="table-card-title">总前端120KVA-UPS系统</div>
+                  <table class="table">
+                    <tr class="tr">
+                      <th class="th">电源</th>
+                      <th class="th">温度 (℃)</th>
+                      <th class="th">输入电压A (V)</th>
+                      <th class="th">输入电压B (V)</th>
+                      <th class="th">输入电压C (V)</th>
+                      <th class="th">输出电压A (V)</th>
+                      <th class="th">输出电压B (V)</th>
+                      <th class="th">输出电压C (V)</th>
+                      <th class="th">负载A (%)</th>
+                      <th class="th">负载B (%)</th>
+                      <th class="th">负载C (%)</th>
+                    </tr>
+                    <tr v-for="(n0, i0) in nodelist0" :key="'n_'+index+'_'+i0" class="tr">
+                      <td :class="'td '+ n0.bkc||''">{{ n0.name }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.heat }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.inputA }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.inputB }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.inputC }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.outputA }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.outputB }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.outputC }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.loadA }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.loadB }}</td>
+                      <td :class="'td '+ n0.bkc||''">{{ n0.loadC }}</td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="table-card-box">
+                  <div class="table-card-title">一级分前端10KVA-UPS系统</div>
+                  <table class="table">
+                    <tr class="tr">
+                      <th class="th">分公司</th>
+                      <th class="th">分前端</th>
+                      <th class="th">温度 (℃)</th>
+                      <th class="th">输入电压 (V)</th>
+                      <th class="th">输出电压 (V)</th>
+                      <th class="th">负载 (%)</th>
+                    </tr>
+                    <tr v-for="(n1, i1) in nodelist1" :key="'n_'+index+'_'+i1" class="tr">
+                      <td v-if="n1.rowspan" :class="'td '+ n1.bkc||''" :rowspan="n1.rowspan">{{ n1.org }}</td>
+                      <td :class="'td '+ n1.bkc||''">{{ n1.name }}</td>
+                      <td :class="'td '+ n1.bkc||''">{{ n1.heat }}</td>
+                      <td :class="'td '+ n1.bkc||''">{{ n1.input }}</td>
+                      <td :class="'td '+ n1.bkc||''">{{ n1.output }}</td>
+                      <td :class="'td '+ n1.bkc||''">{{ n1.load }}</td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="table-card-box">
+                  <div class="table-card-title">二级分前端及乡镇广播站10KVA-UPS系统</div>
+                  <table class="table">
+                    <tr class="tr">
+                      <th class="th">分公司</th>
+                      <th class="th">分前端</th>
+                      <th class="th">温度 (℃)</th>
+                      <th class="th">输入电压 (V)</th>
+                      <th class="th">输出电压 (V)</th>
+                      <th class="th">负载 (%)</th>
+                    </tr>
+                    <tr v-for="(n2, i2) in nodelist2" :key="'n_'+index+'_'+i2" class="tr">
+                      <td v-if="n2.rowspan" :class="'td '+ n2.bkc||''" :rowspan="n2.rowspan">{{ n2.org }}</td>
+                      <td :class="'td '+ n2.bkc||''">{{ n2.name }}</td>
+                      <td :class="'td '+ n2.bkc||''">{{ n2.heat }}</td>
+                      <td :class="'td '+ n2.bkc||''">{{ n2.input }}</td>
+                      <td :class="'td '+ n2.bkc||''">{{ n2.output }}</td>
+                      <td :class="'td '+ n2.bkc||''">{{ n2.load }}</td>
+                    </tr>
+                  </table>
+                </div>
               </div>
             </el-card>
           </el-timeline-item>
@@ -194,6 +274,7 @@ export default {
           dateTime: '2023-12-03 10:03:46',
           name: '于丽婷',
           completed: false,
+          status: 1,
           expand: false,
           errorNum: 0
         }, {
@@ -269,10 +350,10 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      // const end = new Date()
-      // const start = new Date()
-      // start.setTime(start.getTime() - 3600 * 1000 * 24)
-      // this.timeList = [start, end]
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 72)
+      this.timeList = [start, end]
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
       canvas.width = canvas.height = 160
@@ -300,6 +381,27 @@ export default {
     },
     toSetting() {
       this.$refs.settingPage.loadData()
+    },
+    addInspection(formData) {
+      this.tableList.unshift({
+        dateTime: formData.dateTime,
+        name: formData.inspector,
+        completed: false,
+        status: 1,
+        expand: false,
+        errorNum: 0
+      })
+    },
+    beginInspection(item) {
+      item.status = 2
+      setTimeout(() => {
+        item.status = 3
+        item.expand = true
+      }, 2500)
+    },
+    submitInspection(item) {
+      item.completed = true
+      item.expand = false
     },
     loadData() {
 

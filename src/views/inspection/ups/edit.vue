@@ -10,15 +10,15 @@
     width="500px"
   >
     <el-form ref="formViewRef" :model="formData" size="mini" :rules="rules" :status-icon="true" label-width="170px">
-      <el-form-item label="巡检时间：" class="form-cell" prop="date">
+      <el-form-item label="巡检时间：" class="form-cell" prop="dateTime">
         <div class="cell-box">
-          <el-date-picker v-model="formData.date" size="mini" type="date" placeholder="选择日期" class="cell-select" />
+          <el-date-picker v-model="formData.dateTime" size="mini" type="datetime" placeholder="选择日期时间" class="cell-select" />
         </div>
       </el-form-item>
       <el-form-item label="巡检员：" class="form-cell" prop="inspector">
         <div class="cell-box">
           <el-select v-model="formData.inspector" placeholder="请选择" size="mini" class="cell-select">
-            <el-option v-for="item in inspectorList" :key="item.id" :label="item.name" :value="item.id" />
+            <el-option v-for="item in inspectorList" :key="item.id" :label="item.name" :value="item.name" />
           </el-select>
         </div>
       </el-form-item>
@@ -44,11 +44,11 @@ export default {
         { name: '孙某某', id: 5 }
       ],
       formData: {
-        date: '',
+        dateTime: '',
         inspector: ''
       },
       rules: {
-        date: { required: true, message: '请选择巡巡检时间', trigger: 'blur' },
+        dateTime: { required: true, message: '请选择巡巡检时间', trigger: 'blur' },
         inspector: { required: true, message: '请选择巡检人', trigger: 'blur' }
       }
     }
@@ -56,12 +56,11 @@ export default {
   mounted() {
   },
   methods: {
-    // 获取当前日期
-    getNowDate(now) {
+    getNowDateTime(now) {
       if (!now) {
         now = new Date()
       }
-      return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`
+      return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
     },
     showView() {
       this.visible = true
@@ -76,7 +75,8 @@ export default {
     submitForm() {
       this.$refs.formViewRef.validate((valid, obj) => {
         if (valid) {
-          console.log(this.formData)
+          this.$parent.addInspection(this.formData)
+          this.cancelView()
         } else {
           this.$message({
             message: '表单信息有误，请核对无误后提交！',
@@ -86,7 +86,7 @@ export default {
       })
     },
     loadData() {
-      this.formData.date = this.getNowDate()
+      this.formData.dateTime = this.getNowDateTime()
       this.showView()
     }
   }

@@ -15,7 +15,7 @@
           </div>
           <div class="right-wrapper">
             <el-button type="primary" size="mini" icon="el-icon-download" @click="loadData">拉取数据</el-button>
-            <el-button type="success" size="mini" icon="el-icon-setting" @click="toSetting">监听设置</el-button>
+            <el-button type="warning" size="mini" icon="el-icon-setting" @click="toSetting">监听设置</el-button>
           </div>
         </div>
       </el-card>

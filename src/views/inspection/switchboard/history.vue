@@ -92,7 +92,6 @@ export default {
       this.$nextTick(() => {
         const chartCurve = echarts.init(this.$refs.chartCurve)
         let base = +new Date(2023, 11, 1)
-        console.log(base)
         const towHour = 2 * 3600 * 1000
         const inputDataList = [[base, -20]]
         for (let i = 1; i < 72; i++) {
