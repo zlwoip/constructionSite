@@ -44,10 +44,10 @@
             <div style="padding-top:10px">
               <table class="table">
                 <tr class="tr">
-                  <th class="th">端口</th>
-                  <th class="th">对应地址</th>
-                  <th class="th">光接收功率</th>
-                  <th class="th">光发射功率</th>
+                  <th class="th">端口<img :src="require('@/assets/port.png')" style="transform: scaleX(0.9) scaleY(0.9)" /></th>
+                  <th class="th">对应地址<img :src="require('@/assets/locat.png')" /></th>
+                  <th class="th">光接收功率<img :src="require('@/assets/wave.png')" /></th>
+                  <th class="th">光发射功率<img :src="require('@/assets/wave.png')" /></th>
                 </tr>
                 <tr v-for="(port, ii) in iptv.portList" :key="'p_'+i+'_'+ii" class="tr">
                   <td>
@@ -578,6 +578,10 @@ export default {
     padding: 8px;
     border-radius: 5px;
     text-align: center;
+    img {
+      position: absolute;
+      padding: 0 4px;
+    }
   }
   th {
     background-color: #e2e2e2;
