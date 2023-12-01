@@ -171,7 +171,7 @@ export default {
             {
               name: '光接收功率',
               type: 'line',
-              smooth: 0.8,
+              smooth: true,
               lineStyle: {
                 width: 0
               },
@@ -197,7 +197,7 @@ export default {
             {
               name: '光发射功率',
               type: 'line',
-              smooth: 0.8,
+              smooth: true,
               lineStyle: {
                 width: 0
               },
