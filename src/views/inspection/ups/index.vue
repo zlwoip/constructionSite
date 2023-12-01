@@ -41,7 +41,7 @@
                 <span v-else title="点击查看巡检报告">展开 <i class="el-icon-d-arrow-right"></i></span>
               </div>
               <img class="signImg" :src="require('@/assets/signImg.png')" />
-              <p>本次巡检共发现
+              <p style="margin-bottom: 0">本次巡检共发现
                 <span
                   :class="item.errorNum?'underline touch':'underline'"
                   :title="item.errorNum?'点击查看异常清单':''"
@@ -52,7 +52,7 @@
                 </span>
                 个异常
               </p>
-              <div v-show="item.expand">
+              <div v-show="item.expand" style="margin-top:12px">
                 <div class="table-card-box">
                   <div class="table-card-title">总前端120KVA-UPS系统</div>
                   <table class="table">
