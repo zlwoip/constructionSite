@@ -19,6 +19,21 @@ export const adminRoutes = [
     ]
   },
   {
+    menuUrl: '/device',
+    menuName: '设备运维管理',
+    icon: 'list',
+    children: [
+      {
+        menuUrl: '/device/switchboard/index',
+        menuName: '交换机运维'
+      },
+      {
+        menuUrl: '/device/ups/index',
+        menuName: 'UPS运维'
+      }
+    ]
+  },
+  {
     menuUrl: '/authority',
     menuName: '系统管理',
     icon: 'system',
