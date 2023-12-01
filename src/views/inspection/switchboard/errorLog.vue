@@ -19,8 +19,8 @@
           <tr class="tr">
             <th class="th">端口</th>
             <th class="th">对应地址</th>
-            <th class="th">接收光功率</th>
-            <th class="th">输出光功率</th>
+            <th class="th">光接收功率</th>
+            <th class="th">光发射功率</th>
           </tr>
           <tr v-for="(port, ii) in iptv.portList" :key="'p_'+i+'_'+ii" class="tr">
             <td>{{ port.port }}</td>
@@ -39,7 +39,6 @@
 <script>
 
 export default {
-  dicts: ['supplier_rank'],
   data() {
     return {
       visible: false,

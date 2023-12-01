@@ -110,7 +110,6 @@
 <script>
 
 export default {
-  dicts: ['supplier_rank'],
   data() {
     return {
       visible: false,

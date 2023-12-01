@@ -46,16 +46,27 @@
                 <tr class="tr">
                   <th class="th">端口</th>
                   <th class="th">对应地址</th>
-                  <th class="th">接收光功率</th>
-                  <th class="th">输出光功率</th>
+                  <th class="th">光接收功率</th>
+                  <th class="th">光发射功率</th>
                 </tr>
                 <tr v-for="(port, ii) in iptv.portList" :key="'p_'+i+'_'+ii" class="tr">
-                  <td>{{ port.port }}</td>
+                  <td>
+                    <span class="color-dot" :style="{backgroundColor:colorScheme[ii]}"></span>
+                    <span class="touch link-text" title="点击查看历史曲线" @click="toHistory(iptv,port)">{{ port.port }}</span>
+                  </td>
                   <td>{{ port.address }}</td>
                   <td>{{ port.input }}</td>
                   <td>{{ port.output }}</td>
                 </tr>
               </table>
+            </div>
+            <div style="width: 100%">
+              <div style="width: 50%;display: inline-block;overflow: hidden;">
+                <div :id="`chartPi${i}`" style="height: 180px;margin-top: -90px"></div>
+              </div>
+              <div style="width: 50%;display: inline-block;overflow: hidden;">
+                <div :id="`chartPo${i}`" style="height: 180px;margin-top: -90px"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -63,16 +74,42 @@
     </el-card>
     <error-log ref="errorLogPage" />
     <setting-page ref="settingPage" />
+    <history-page ref="historyPage" />
   </div>
 </template>
 
 <script>
+import * as echarts from 'echarts'
 import errorLog from './errorLog'
 import settingPage from './setting'
+import historyPage from './history'
 export default {
-  components: { errorLog, settingPage },
+  components: { errorLog, settingPage, historyPage },
   data() {
     return {
+      colorScheme: [
+        '#ff7875',
+        '#ff9c6e',
+        '#ffc069',
+        '#ffd666',
+        '#b37feb',
+        '#727bec',
+        '#3eaf7c',
+        '#4a657a',
+        '#223273',
+        '#6f6f6f',
+        '#37a2da',
+        '#67e0e3',
+        '#9fe6b8',
+        '#ffdb5c',
+        '#ff9f7f',
+        '#e062ae',
+        '#e690d1',
+        '#e7bcf3',
+        '#9d96f5',
+        '#8378EA'
+      ],
+      waterMark: '',
       dateTime: '',
       errorNum: 3,
       query: {
@@ -230,7 +267,7 @@ export default {
         }
       ],
       tableList: [],
-      waterMark: ''
+      chartsList: []
     }
   },
   mounted() {
@@ -248,10 +285,24 @@ export default {
       ctx.rotate(-Math.PI / 4)
       ctx.fillText(`威海广电网络`, 0, 0)
       this.waterMark = canvas
+      this.initCharts()
     })
   },
   methods: {
-    // 获取当前时间
+    randNum(min, max, len, isRound) {
+      var arr = []
+      for (let i = 0; i < len; i++) {
+        var num
+        num = Math.random() * (max - min) + min
+        if (isRound) {
+          num = Math.round(num)
+          arr.push(num)
+        } else {
+          arr.push(num.toFixed(2))
+        }
+      }
+      return arr
+    },
     getNowDateTime(now) {
       if (!now) {
         now = new Date()
@@ -290,15 +341,156 @@ export default {
           return item.portList.length
         })
       }
+      this.initCharts()
     },
     resetSearch() {
       this.query.ip = ''
       this.query.port = ''
       this.query.address = ''
       this.tableList = this.dataList
+      this.initCharts()
     },
     toSetting() {
       this.$refs.settingPage.loadData()
+    },
+    toHistory(iptv, port) {
+      this.$refs.historyPage.loadData(iptv, port)
+    },
+    initCharts() {
+      this.$nextTick(() => {
+        this.tableList.forEach((iptv, index) => {
+          const dataList = []
+          let sum = 0
+          iptv.portList.forEach(item => {
+            const rand = this.randNum(10, 30, 1, true)[0]
+            sum += rand
+            dataList.push({
+              value: rand,
+              name: item.port
+            })
+          })
+          dataList.push({
+            value: sum,
+            itemStyle: {
+              color: 'none',
+              decal: {
+                symbol: 'none'
+              }
+            },
+            label: {
+              show: false
+            }
+          })
+          const chart = echarts.init(document.getElementById(`chartPi${index}`))
+          const option = {
+            title: {
+              show: true,
+              text: '光接收功率端口比',
+              left: 'center',
+              bottom: '-6',
+              textStyle: {
+                color: '#999',
+                fontSize: '12'
+              }
+            },
+            color: this.colorScheme,
+            tooltip: {
+              trigger: 'item',
+              position: ['24%', '70%']
+            },
+            legend: {
+              show: false
+            },
+            grid: {
+              left: '0px',
+              right: '0px',
+              top: '0px',
+              bottom: '0px',
+              containLabel: false
+            },
+            series: [
+              {
+                type: 'pie',
+                roseType: 'radius',
+                radius: ['70%', '100%'],
+                center: ['50%', '100%'],
+                startAngle: 180,
+                label: {
+                  show: false
+                },
+                data: dataList
+              }
+            ]
+          }
+          chart.setOption(option)
+        })
+        this.tableList.forEach((iptv, index) => {
+          const dataList = []
+          let sum = 0
+          iptv.portList.forEach(item => {
+            const rand = this.randNum(10, 30, 1, true)[0]
+            sum += rand
+            dataList.push({
+              value: rand,
+              name: item.port
+            })
+          })
+          dataList.push({
+            value: sum,
+            itemStyle: {
+              color: 'none',
+              decal: {
+                symbol: 'none'
+              }
+            },
+            label: {
+              show: false
+            }
+          })
+          const chart = echarts.init(document.getElementById(`chartPo${index}`))
+          const option = {
+            title: {
+              show: true,
+              text: '光发射功率端口比',
+              left: 'center',
+              bottom: '-6',
+              textStyle: {
+                color: '#999',
+                fontSize: '12'
+              }
+            },
+            color: this.colorScheme,
+            tooltip: {
+              trigger: 'item',
+              position: ['24%', '70%']
+            },
+            legend: {
+              show: false
+            },
+            grid: {
+              left: '0px',
+              right: '0px',
+              top: '0px',
+              bottom: '0px',
+              containLabel: false
+            },
+            series: [
+              {
+                type: 'pie',
+                roseType: 'radius',
+                radius: ['70%', '100%'],
+                center: ['50%', '100%'],
+                startAngle: 180,
+                label: {
+                  show: false
+                },
+                data: dataList
+              }
+            ]
+          }
+          chart.setOption(option)
+        })
+      })
     },
     loadData() {
 
@@ -310,6 +502,7 @@ export default {
 <style lang="scss" scoped>
 .box-card {
   display: inline-block;
+  vertical-align: top;
   position: relative;
   margin: 6px 12px;
   padding: 10px 6px;

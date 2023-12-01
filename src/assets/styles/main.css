@@ -62,3 +62,22 @@ body,
   text-underline-offset: 2px;
   text-decoration-color: rgba(100, 100, 100, 0.4);
 }
+@keyframes aj{
+  0%{transform: scale(1)rotate(45deg);}
+  50%{transform: scale(1.1)rotate(45deg);}
+  100%{transform: scale(1)rotate(45deg);}
+}
+.color-dot {
+  width: 10px;
+  height: 10px;
+  float: left;
+  position: relative;
+  left: 15px;
+  background-color: red;
+  border-radius: 50%;
+  box-shadow: 1px 2px 8px 0 rgba(0,0,0,0.12);
+  animation: 1s aj infinite;
+}
+.link-text:hover {
+  color: #3a8ee6;
+}
