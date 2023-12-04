@@ -2,13 +2,7 @@
   <div class="main-container">
     <TableHeader :can-collapsed="false">
       <template slot="right">
-        <el-button
-          v-if="isInited('addItemModel')"
-          type="primary"
-          size="mini"
-          icon="el-icon-plus"
-          @click="onAddItem"
-        >添加
+        <el-button v-if="isInited('addItemModel')" type="primary" size="mini" icon="el-icon-plus" @click="onAddItem">添加
         </el-button>
       </template>
     </TableHeader>
@@ -25,70 +19,30 @@
           row-key="id"
           :tree-props="{children: 'children'}"
         >
-          <el-table-column
-            align="center"
-            label="序号"
-            fixed="left"
-            width="80"
-          >
+          <el-table-column align="center" label="序号" fixed="left" width="80">
             <template slot-scope="scope">
               {{ scope.$index + 1 }}
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="部门名称"
-            prop="name"
-          />
-          <el-table-column
-            align="center"
-            label="部门编号"
-            prop="depCode"
-          />
-          <el-table-column
-            align="center"
-            label="排序"
-            prop="order"
-          />
-          <el-table-column
-            align="center"
-            label="状态"
-          >
+          <el-table-column align="center" label="部门名称" prop="name" />
+          <el-table-column align="center" label="部门编号" prop="depCode" />
+          <el-table-column align="center" label="排序" prop="order" />
+          <el-table-column align="center" label="状态">
             <template slot-scope="scope">
-              <el-switch
-                v-model="scope.row.status"
-                :active-value="1"
-                :inactive-value="0"
-              />
+              <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" />
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="创建时间"
-            prop="createTime"
-            width="160px"
-          />
-          <el-table-column
-            align="center"
-            label="操作"
-          >
+          <el-table-column align="center" label="创建时间" prop="createTime" width="160px" />
+          <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <el-link
-                type="primary"
-                :underline="false"
-                @click="onUpdateItem(scope.row)"
-              >编辑</el-link>
-              <el-link
-                type="danger"
-                :underline="false"
-                @click="onDeleteItem(scope.row)"
-              >删除</el-link>
+              <el-link type="primary" :underline="false" style="margin: 0 5px" @click="onUpdateItem(scope.row)">编辑</el-link>
+              <el-link type="danger" :underline="false" style="margin: 0 5px" @click="onDeleteItem(scope.row)">删除</el-link>
             </template>
           </el-table-column>
         </el-table>
       </template>
     </TableBody>
-    <Dialog ref="dialog">
+    <Dialog ref="dialog" title="添加">
       <template>
         <BaseForm
           ref="baseForm"

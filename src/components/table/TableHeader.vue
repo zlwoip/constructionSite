@@ -11,22 +11,15 @@
         slot="header"
         class="wrapper"
       >
-        <el-tooltip
-          class="item"
-          effect="dark"
-          content="点击展开/收起"
-          placement="top"
-        >
-          <el-link
-            :underline="false"
-            @click="collapsed"
-          >{{ title }}
-            <i
-              v-if="showArrow"
-              :class="showSearchContent ? 'el-icon-caret-bottom' : 'el-icon-caret-top'"
-            ></i>
-          </el-link>
-        </el-tooltip>
+        <el-link
+          :underline="false"
+          @click="collapsed"
+        >{{ title }}
+          <i
+            v-if="showArrow"
+            :class="showSearchContent ? 'el-icon-caret-bottom' : 'el-icon-caret-top'"
+          ></i>
+        </el-link>
         <div class="left-wrapper">
           <slot name="left"></slot>
         </div>

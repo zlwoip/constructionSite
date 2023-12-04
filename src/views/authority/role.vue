@@ -2,13 +2,7 @@
   <div class="main-container">
     <TableHeader :can-collapsed="false">
       <template slot="right">
-        <el-button
-          v-if="isInited('addItemModel')"
-          type="primary"
-          size="mini"
-          icon="el-icon-plus"
-          @click="onAddItem"
-        >添加
+        <el-button v-if="isInited('addItemModel')" type="primary" size="mini" icon="el-icon-plus" @click="onAddItem">添加
         </el-button>
       </template>
     </TableHeader>
@@ -23,66 +17,26 @@
           :stripe="tableConfig.stripe"
           :border="tableConfig.border"
         >
-          <el-table-column
-            align="center"
-            label="序号"
-            fixed="left"
-            width="80"
-          >
+          <el-table-column align="center" label="序号" fixed="left" width="80">
             <template slot-scope="scope">
               {{ scope.$index + 1 }}
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="角色名称"
-            prop="name"
-          />
-          <el-table-column
-            align="center"
-            label="角色编号"
-            prop="roleCode"
-          />
-          <el-table-column
-            align="center"
-            label="角色描述"
-            prop="description"
-          />
-          <el-table-column
-            align="center"
-            label="创建时间"
-            prop="createTime"
-            width="160px"
-          />
-          <el-table-column
-            align="center"
-            label="操作"
-          >
+          <el-table-column align="center" label="角色名称" prop="name" />
+          <el-table-column align="center" label="角色编号" prop="roleCode" />
+          <el-table-column align="center" label="角色描述" prop="description" />
+          <el-table-column align="center" label="创建时间" prop="createTime" width="160px" />
+          <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <el-link
-                :disabled="scope.row.roleCode === 'ROLE_admin'"
-                type="primary"
-                :underline="false"
-                @click="onUpdateItem(scope.row)"
-              >编辑</el-link>
-              <el-link
-                :disabled="scope.row.roleCode === 'ROLE_admin'"
-                type="danger"
-                :underline="false"
-                @click="onDeleteItem(scope.row)"
-              >删除</el-link>
-              <el-link
-                :disabled="scope.row.roleCode === 'ROLE_admin'"
-                type="warning"
-                :underline="false"
-                @click="showMenu(scope.row)"
-              >菜单权限</el-link>
+              <el-link :disabled="scope.row.roleCode === 'ROLE_admin'" type="primary" :underline="false" style="margin: 0 5px" @click="onUpdateItem(scope.row)">编辑</el-link>
+              <el-link :disabled="scope.row.roleCode === 'ROLE_admin'" type="danger" :underline="false" style="margin: 0 5px" @click="onDeleteItem(scope.row)">删除</el-link>
+              <el-link :disabled="scope.row.roleCode === 'ROLE_admin'" type="warning" :underline="false" style="margin: 0 5px" @click="showMenu(scope.row)">菜单权限</el-link>
             </template>
           </el-table-column>
         </el-table>
       </template>
     </TableBody>
-    <Dialog ref="dialog">
+    <Dialog ref="dialog" title="添加">
       <template>
         <BaseForm
           ref="baseForm"
@@ -90,20 +44,9 @@
         />
       </template>
     </Dialog>
-    <Dialog
-      ref="menuDialog"
-      title="菜单权限"
-      :submit-button="true"
-    >
+    <Dialog ref="menuDialog" title="菜单权限" :submit-button="true">
       <template>
-        <el-tree
-          :data="menuData"
-          show-checkbox
-          node-key="menuUrl"
-          :default-expanded-keys="defaultExpandedKeys"
-          :default-checked-keys="defaultCheckedKeys"
-          :props="defaultProps"
-        />
+        <el-tree :data="menuData" show-checkbox node-key="menuUrl" :default-expanded-keys="defaultExpandedKeys" :default-checked-keys="defaultCheckedKeys" :props="defaultProps"/>
       </template>
     </Dialog>
   </div>

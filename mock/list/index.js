@@ -7,6 +7,12 @@ const totalSize = 30
 function computePageSize(totalSize, page, pageSize) {
   return Math.abs(totalSize - pageSize * page >= 0 ? pageSize : totalSize - pageSize * page)
 }
+Mock.Random.extend({
+  phone: function () {
+    var phonePrefixs = ['133', '135', '192'] // 自己写前缀哈
+    return this.pick(phonePrefixs) + Mock.mock(/\d{8}/)
+  }
+})
 
 Mock.mock(RegExp(getDepartmentList), function ({ body }) {
   return Mock.mock({
@@ -15,50 +21,8 @@ Mock.mock(RegExp(getDepartmentList), function ({ body }) {
     'data': [
       {
         'id': 1,
-        'name': '总裁办',
-        'depCode': 'dp_code_manager', // 0男 1女
-        'order|+1': 1, // 0不是 1是
-        'createTime': Random.now('yyyy-MM-dd HH:mm:ss'),
-        'status': 1 // 0 禁用 1正常
-      },
-      {
-        'id': 2,
-        'name': '市场部',
-        'depCode': 'dp_code_marketing', // 0男 1女
-        'order|+1': 1, // 0不是 1是
-        'createTime': Random.now('yyyy-MM-dd HH:mm:ss'),
-        'status': 1, // 0 禁用 1正常,
-        children: [
-          {
-            'id': 3,
-            'name': '市场一部',
-            'depCode': 'dp_code_marketing_1', // 0男 1女
-            'order|+1': 1, // 0不是 1是
-            'createTime': Random.now('yyyy-MM-dd HH:mm:ss'),
-            'status': 1 // 0 禁用 1正常
-          },
-          {
-            'id': 4,
-            'name': '市场二部',
-            'depCode': 'dp_code_marketing_2', // 0男 1女
-            'order|+1': 1, // 0不是 1是
-            'createTime': Random.now('yyyy-MM-dd HH:mm:ss'),
-            'status': 1 // 0 禁用 1正常
-          }
-        ]
-      },
-      {
-        'id': 5,
         'name': '技术部',
         'depCode': 'dp_code_technology', // 0男 1女
-        'order|+1': 1, // 0不是 1是
-        'createTime': Random.now('yyyy-MM-dd HH:mm:ss'),
-        'status': 1 // 0 禁用 1正常
-      },
-      {
-        'id': 6,
-        'name': '销售部',
-        'depCode': 'dp_code_sale', // 0男 1女
         'order|+1': 1, // 0不是 1是
         'createTime': Random.now('yyyy-MM-dd HH:mm:ss'),
         'status': 1 // 0 禁用 1正常
@@ -103,13 +67,16 @@ Mock.mock(RegExp(getTableList), function ({ body }) {
       {
         'id|+1': 1,
         'nickName': function () {
-          return Random.name()
+          return Random.cname()
         },
         'avatar': '@/assets/img_avatar_01.jpeg',
         'gender|0-1': 0, // 0男 1女
         'vip|0-1': 0, // 0不是 1是
         'address': function () {
           return Random.city(true)
+        },
+        'phone': function () {
+          return Random.phone(true)
         },
         'lastLoginTime': Random.now('yyyy-MM-dd HH:mm:ss'),
         'lastLoginIp': function () {

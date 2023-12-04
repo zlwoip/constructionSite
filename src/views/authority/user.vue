@@ -2,13 +2,7 @@
   <div class="main-container">
     <TableHeader :can-collapsed="false">
       <template slot="right">
-        <el-button
-          type="danger"
-          size="mini"
-          icon="el-icon-delete"
-          @click="onDeleteMultiItem"
-        >删除
-        </el-button>
+        <el-button type="primary" size="mini" icon="el-icon-plus" @click="onAddItem">添加</el-button>
       </template>
     </TableHeader>
     <TableBody ref="tableBody">
@@ -23,97 +17,39 @@
           :border="false"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column
-            type="selection"
-            width="45"
-          />
-          <el-table-column
-            align="center"
-            label="序号"
-            width="80"
-          >
+          <el-table-column type="selection" width="45" />
+          <el-table-column align="center" label="序号" width="80">
             <template slot-scope="scope">
               {{ scope.$index + 1 }}
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="名称"
-            prop="nickName"
-          />
-          <el-table-column
-            align="center"
-            label="头像"
-          >
+          <el-table-column align="center" label="名称" prop="nickName" />
+          <el-table-column align="center" label="签名">
             <template slot-scope="scope">
               <div class="avatar-container">
-                <el-image
-                  :src="require('@/assets/img_avatar_01.jpeg')"
-                  class="avatar"
-                  :class="{'avatar-vip' : scope.row.vip === 1}"
-                />
-                <img
-                  v-if="scope.row.vip === 1"
-                  class="vip"
-                  :src="require('@/assets/img_vip_icon.png')"
-                />
+                <el-image :src="require(`@/assets/${scope.row.signImg || 'signImg'}.png`)" class="avatar avatar-vip" />
               </div>
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="性别"
-            prop="gender"
-          >
+          <el-table-column align="center" label="性别" prop="gender">
             <template slot-scope="scope">
               <div class="gender-container flex justify-center align-center">
-                <img
-                  class="gender-icon"
-                  :src="scope.row.gender === 0 ? require('@/assets/icon_sex_man.png') : require('@/assets/icon_sex_woman.png')"
-                />
+                <img class="gender-icon" :src="scope.row.gender === 0 ? require('@/assets/icon_sex_man.png') : require('@/assets/icon_sex_woman.png')" />
                 <span>{{ scope.row.gender === 0 ? '男' : '女' }}</span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="地址"
-            prop="address"
-          />
-          <el-table-column
-            align="center"
-            label="上次登录时间"
-            prop="lastLoginTime"
-            width="160px"
-          />
-          <el-table-column
-            align="center"
-            label="上次登录IP"
-            prop="lastLoginIp"
-            width="130px"
-          />
-          <el-table-column
-            align="center"
-            label="状态"
-          >
+          <el-table-column align="center" label="电话" prop="phone" />
+          <el-table-column align="center" label="上次登录时间" prop="lastLoginTime" width="160px" />
+          <el-table-column align="center" label="上次登录IP" prop="lastLoginIp" width="130px" />
+          <el-table-column align="center" label="状态">
             <template slot-scope="scope">
-              <el-switch
-                v-model="scope.row.status"
-                :active-value="1"
-                :inactive-value="0"
-              />
+              <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" />
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="操作"
-          >
+          <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <el-link
-                type="danger"
-                :underline="false"
-                @click="onDeleteItem(scope.row)"
-              >删除</el-link>
+              <el-link type="danger" :underline="false" style="margin: 0 5px" @click="onDeleteItem(scope.row)">删除</el-link>
             </template>
           </el-table-column>
         </el-table>
@@ -198,12 +134,13 @@ export default {
 <style lang="scss" scoped>
 .avatar-container {
   position: relative;
-  width: 30px;
+  width: 80px;
+  height: 50px;
   margin: 0 auto;
   vertical-align: middle;
   .avatar {
     width: 100%;
-    border-radius: 50%;
+    border-radius: 5%;
   }
   .avatar-vip {
     border: 2px solid #cece1e;

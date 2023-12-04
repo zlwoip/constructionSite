@@ -19,6 +19,7 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
         size="mini"
+        style="margin:0 10px"
       />
     </div>
     <div ref="chartCurve" style="width: 100%;height: 200px"></div>
@@ -96,13 +97,13 @@ export default {
         const inputDataList = [[base, -20]]
         for (let i = 1; i < 72; i++) {
           const now = new Date((base += towHour))
-          inputDataList.push([+now, Math.round((Math.random() - 0.5) * 10 + inputDataList[i - 1][1])])
+          inputDataList.push([+now, Math.round((Math.random() - 0.5) * 5 + inputDataList[i - 1][1])])
         }
         base = +new Date(2023, 11, 1)
         const outputDataList = [[base, -15]]
         for (let i = 1; i < 72; i++) {
           const now = new Date((base += towHour))
-          outputDataList.push([+now, Math.round((Math.random() - 0.5) * 10 + outputDataList[i - 1][1])])
+          outputDataList.push([+now, Math.round((Math.random() - 0.5) * 5 + outputDataList[i - 1][1])])
         }
         const option = {
           tooltip: {

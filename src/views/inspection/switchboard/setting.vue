@@ -14,13 +14,13 @@
         <div class="cell-box" style="display: flex">
           <el-form-item prop="minInputTPE">
             <el-input v-model.number="formData.minInputOP" size="mini" placeholder="阈值下限" class="cell-input">
-              <template slot="append">下限 V</template>
+              <template slot="append">下限 dBm</template>
             </el-input>
           </el-form-item>
           <div style="width: 20px;text-align: center">~</div>
           <el-form-item prop="maxInputTPE">
             <el-input v-model.number="formData.maxInputOP" size="mini" placeholder="阈值上限" class="cell-input">
-              <template slot="append">上限 V</template>
+              <template slot="append">上限 dBm</template>
             </el-input>
           </el-form-item>
         </div>
@@ -29,13 +29,13 @@
         <div class="cell-box" style="display: flex">
           <el-form-item prop="minOutputTPE">
             <el-input v-model.number="formData.minOutputOP" size="mini" placeholder="阈值下限" class="cell-input">
-              <template slot="append">下限 V</template>
+              <template slot="append">下限 dBm</template>
             </el-input>
           </el-form-item>
           <div style="width: 20px;text-align: center">~</div>
           <el-form-item prop="maxOutputTPE">
             <el-input v-model.number="formData.maxOutputOP" size="mini" placeholder="阈值上限" class="cell-input">
-              <template slot="append">上限 V</template>
+              <template slot="append">上限 dBm</template>
             </el-input>
           </el-form-item>
         </div>

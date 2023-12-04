@@ -385,7 +385,7 @@ export default {
           const option = {
             title: {
               show: true,
-              text: '光接收功率端口比',
+              text: '光接收功率分布',
               left: 'center',
               bottom: '-6',
               textStyle: {
@@ -451,7 +451,7 @@ export default {
           const option = {
             title: {
               show: true,
-              text: '光发射功率端口比',
+              text: '光发射功率分布',
               left: 'center',
               bottom: '-6',
               textStyle: {

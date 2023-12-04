@@ -2,13 +2,7 @@
   <div class="main-container">
     <TableHeader :can-collapsed="false">
       <template slot="right">
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-plus"
-          @click="onAddItem"
-        >添加
-        </el-button>
+        <el-button type="primary" size="mini" icon="el-icon-plus" @click="onAddItem">添加</el-button>
       </template>
     </TableHeader>
     <TableBody ref="tableBody">
@@ -24,104 +18,45 @@
           row-key="menuUrl"
           :tree-props="{children: 'children'}"
         >
-          <el-table-column
-            align="center"
-            label="序号"
-            fixed="left"
-            width="80"
-          >
+          <el-table-column align="center" label="序号" fixed="left" width="80">
             <template slot-scope="scope">
               {{ scope.$index + 1 }}
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="菜单名称"
-            prop="menuName"
-          />
-          <el-table-column
-            align="center"
-            label="菜单地址"
-            prop="menuUrl"
-          />
-          <el-table-column
-            align="center"
-            label="创建时间"
-            prop="createTime"
-            width="160px"
-          >
+          <el-table-column align="center" label="菜单名称" prop="menuName" />
+          <el-table-column align="center" label="菜单地址" prop="menuUrl" />
+          <el-table-column align="center" label="创建时间" prop="createTime" width="160px">
             <template slot-scope="scope">
               <div>{{ scope.row.createTime || '--' }}</div>
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="操作"
-          >
+          <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <el-link
-                type="primary"
-                :underline="false"
-                @click="onUpdateItem(scope.row)"
-              >编辑</el-link>
-              <el-link
-                type="danger"
-                :underline="false"
-                @click="onDeleteItem(scope.row)"
-              >删除</el-link>
+              <el-link type="primary" :underline="false" style="margin: 0 5px" @click="onUpdateItem(scope.row)">编辑</el-link>
+              <el-link type="danger" :underline="false" style="margin: 0 5px" @click="onDeleteItem(scope.row)">删除</el-link>
             </template>
           </el-table-column>
         </el-table>
       </template>
     </TableBody>
-    <Dialog ref="dialog">
+    <Dialog ref="dialog" title="添加">
       <template>
-        <el-form
-          ref="baseForm"
-          :model="menuModel"
-          :rules="formRules"
-          label-width="80px"
-          label-position="right"
-        >
+        <el-form ref="baseForm" :model="menuModel" :rules="formRules" label-width="80px" label-position="right">
           <el-form-item label="上级菜单">
             <el-col :span="20">
-              <el-select
-                v-model="menuModel.parentItem"
-                size="small"
-                placeholder="请输入菜单名称"
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="(item, index) of dataList"
-                  :key="index"
-                  :label="item.menuName"
-                  :value="item.menuUrl"
-                />
+              <el-select v-model="menuModel.parentItem" size="small" placeholder="请输入菜单名称" style="width: 100%">
+                <el-option v-for="(item, index) of dataList" :key="index" :label="item.menuName" :value="item.menuUrl" />
               </el-select>
             </el-col>
           </el-form-item>
-          <el-form-item
-            label="菜单名称"
-            prop="name"
-          >
+          <el-form-item label="菜单名称" prop="name">
             <el-col :span="20">
-              <el-input
-                v-model="menuModel.name"
-                size="small"
-                placeholder="请输入菜单名称"
-              />
+              <el-input v-model="menuModel.name" size="small" placeholder="请输入菜单名称" />
             </el-col>
           </el-form-item>
-          <el-form-item
-            label="菜单地址"
-            prop="url"
-          >
+          <el-form-item label="菜单地址" prop="url">
             <el-col :span="20">
-              <el-input
-                v-model="menuModel.url"
-                size="small"
-                placeholder="请输入菜单地址"
-              >
+              <el-input v-model="menuModel.url" size="small" placeholder="请输入菜单地址">
                 <template slot="prepend">{{ menuModel.parentItem ? menuModel.parentItem : '/' }}</template>
               </el-input>
             </el-col>

@@ -97,6 +97,7 @@
     </div>
     <div slot="footer" class="dialog-footer" style="text-align: center">
       <el-button size="mini" icon="el-icon-circle-close" @click="cancelView">关闭</el-button>
+      <el-button v-if="!dataObj.dispose" type="danger" size="mini" icon="el-icon-s-check" @click="submit()">我已处理</el-button>
     </div>
   </el-dialog>
 </template>
@@ -129,6 +130,10 @@ export default {
     },
     cancelView() {
       this.hideView()
+    },
+    submit() {
+      this.$parent.disposeCurrItem()
+      this.cancelView()
     },
     loadData(obj) {
       this.dataObj = obj

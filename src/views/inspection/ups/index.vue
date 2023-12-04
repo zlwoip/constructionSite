@@ -41,6 +41,8 @@
                 <span v-else title="点击查看巡检报告">展开 <i class="el-icon-d-arrow-right"></i></span>
               </div>
               <img class="signImg" :src="require('@/assets/signImg.png')" />
+              <img v-show="item.dispose" class="signImg" :src="require('@/assets/dispose.png')" height="80px" style="left:170px;transform:rotate(-30deg)" />
+              <img class="signImg" :src="require(`@/assets/completed_${item.errorNum?'r':'g'}.png`)" height="40px" style="left:630px;top:60px;transform:rotate(-30deg)" />
               <p style="margin-bottom: 0">本次巡检共发现
                 <span
                   :class="item.errorNum?'underline touch':'underline'"
@@ -268,6 +270,7 @@ export default {
           }
         }]
       },
+      currItem: null,
       timeList: [],
       tableList: [
         {
@@ -276,42 +279,49 @@ export default {
           completed: false,
           status: 1,
           expand: false,
-          errorNum: 0
-        }, {
-          dateTime: '2023-12-03 10:03:46',
-          name: '于丽婷',
-          completed: true,
-          expand: true,
+          dispose: false,
           errorNum: 0
         }, {
           dateTime: '2023-12-03 10:03:46',
           name: '于丽婷',
           completed: true,
           expand: false,
+          dispose: false,
+          errorNum: 0
+        }, {
+          dateTime: '2023-12-03 10:03:46',
+          name: '于丽婷',
+          completed: true,
+          expand: false,
+          errorNum: 3,
+          dispose: true
+        }, {
+          dateTime: '2023-12-03 10:03:46',
+          name: '于丽婷',
+          completed: true,
+          expand: false,
+          dispose: false,
           errorNum: 3
         }, {
           dateTime: '2023-12-03 10:03:46',
           name: '于丽婷',
           completed: true,
           expand: false,
-          errorNum: 3
-        }, {
-          dateTime: '2023-12-03 10:03:46',
-          name: '于丽婷',
-          completed: true,
-          expand: false,
+          dispose: false,
           errorNum: 0
         }, {
           dateTime: '2023-12-03 10:03:46',
           name: '于丽婷',
           completed: true,
           expand: false,
+          dispose: false,
           errorNum: 0
         }, {
           dateTime: '2023-12-03 10:03:46',
           name: '于丽婷',
           completed: true,
           expand: false,
+          dispose: false,
           errorNum: 0
         }
       ],
@@ -376,8 +386,12 @@ export default {
     },
     openErrorLog(item) {
       if (item.errorNum) {
+        this.currItem = item
         this.$refs.errorLogPage.loadData(item)
       }
+    },
+    disposeCurrItem() {
+      this.currItem.dispose = true
     },
     toSetting() {
       this.$refs.settingPage.loadData()
