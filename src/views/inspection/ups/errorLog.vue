@@ -94,6 +94,7 @@
     <div class="signArea">
       <span>巡检员签字：</span>
       <img class="signImg" :src="require('@/assets/signImg.png')" />
+      <img v-show="dataObj.dispose" class="signImg" :src="require('@/assets/dispose.png')" height="80px" style="left:440px;transform:rotate(-30deg)" />
     </div>
     <div slot="footer" class="dialog-footer" style="text-align: center">
       <el-button size="mini" icon="el-icon-circle-close" @click="cancelView">关闭</el-button>
@@ -132,8 +133,7 @@ export default {
       this.hideView()
     },
     submit() {
-      this.$parent.disposeCurrItem()
-      this.cancelView()
+      this.dataObj.dispose = true
     },
     loadData(obj) {
       this.dataObj = obj

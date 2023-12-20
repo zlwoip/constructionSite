@@ -150,6 +150,7 @@ export default {
       this.$refs.formViewRef.validate((valid, obj) => {
         if (valid) {
           console.log(this.formData)
+          this.cancelView()
         } else {
           this.$message({
             message: '表单信息有误，请核对无误后提交！',

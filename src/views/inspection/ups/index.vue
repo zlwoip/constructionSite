@@ -42,7 +42,7 @@
               </div>
               <img class="signImg" :src="require('@/assets/signImg.png')" />
               <img v-show="item.dispose" class="signImg" :src="require('@/assets/dispose.png')" height="80px" style="left:170px;transform:rotate(-30deg)" />
-              <img class="signImg" :src="require(`@/assets/completed_${item.errorNum?'r':'g'}.png`)" height="40px" style="left:630px;top:60px;transform:rotate(-30deg)" />
+              <img class="signImg" :src="require(`@/assets/completed_${item.errorNum&&!item.dispose?'r':'g'}.png`)" height="40px" style="left:630px;top:60px;transform:rotate(-30deg)" />
               <p style="margin-bottom: 0">本次巡检共发现
                 <span
                   :class="item.errorNum?'underline touch':'underline'"
@@ -270,7 +270,6 @@ export default {
           }
         }]
       },
-      currItem: null,
       timeList: [],
       tableList: [
         {
@@ -386,12 +385,8 @@ export default {
     },
     openErrorLog(item) {
       if (item.errorNum) {
-        this.currItem = item
         this.$refs.errorLogPage.loadData(item)
       }
-    },
-    disposeCurrItem() {
-      this.currItem.dispose = true
     },
     toSetting() {
       this.$refs.settingPage.loadData()

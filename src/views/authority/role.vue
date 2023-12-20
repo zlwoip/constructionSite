@@ -46,7 +46,7 @@
     </Dialog>
     <Dialog ref="menuDialog" title="菜单权限" :submit-button="true">
       <template>
-        <el-tree :data="menuData" show-checkbox node-key="menuUrl" :default-expanded-keys="defaultExpandedKeys" :default-checked-keys="defaultCheckedKeys" :props="defaultProps"/>
+        <el-tree :data="menuData" show-checkbox node-key="menuUrl" :default-expanded-keys="defaultExpandedKeys" :default-checked-keys="defaultCheckedKeys" :props="defaultProps" />
       </template>
     </Dialog>
   </div>
