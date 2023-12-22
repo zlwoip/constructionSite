@@ -15,6 +15,7 @@
           :size="tableConfig.size"
           :stripe="tableConfig.stripe"
           :border="false"
+          style="height:calc(70vh - 42px);overflow:auto"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="45" />

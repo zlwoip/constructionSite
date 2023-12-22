@@ -16,6 +16,7 @@
           :size="tableConfig.size"
           :stripe="tableConfig.stripe"
           :border="tableConfig.border"
+          style="height:calc(70vh - 42px);overflow:auto"
         >
           <el-table-column align="center" label="序号" fixed="left" width="80">
             <template slot-scope="scope">

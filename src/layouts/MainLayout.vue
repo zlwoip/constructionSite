@@ -98,6 +98,7 @@ export default {
   .main-base-style {
     box-sizing: border-box;
     padding: 10px;
+    overflow: hidden;
   }
   .main-section {
     min-height: calc(100% - #{$footerHeight});
