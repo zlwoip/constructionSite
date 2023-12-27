@@ -5,15 +5,15 @@
         <div class="wrapper">
           <div class="left-wrapper">
             <span class="label">数据检索条件:</span>
-            <el-input v-model="query.name" clearable size="mini" placeholder="请输入设备名称" style="width: 150px;margin:0 5px" />
-            <el-input v-model="query.code" clearable size="mini" placeholder="请输入设备编号" style="width: 150px;margin:0 5px" />
-            <el-select v-model="query.dw" clearable size="mini" placeholder="请选择所属分管单位" style="width: 160px;margin:0 5px">
+            <el-input v-model="query.upsName" clearable size="mini" placeholder="请输入设备名称" style="width: 150px;margin:0 5px" />
+            <el-input v-model="query.upsIP" clearable size="mini" placeholder="请输入设备IP" style="width: 150px;margin:0 5px" />
+            <el-select v-model="query.branch" clearable size="mini" placeholder="请选择所属分管单位" style="width: 160px;margin:0 5px">
               <el-option v-for="item in dw_type" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
-            <el-select v-model="query.dj" clearable size="mini" placeholder="请选择电源等级" style="width: 180px;margin:0 5px">
+            <el-select v-model="query.upsLevel" clearable size="mini" placeholder="请选择电源等级" style="width: 180px;margin:0 5px">
               <el-option v-for="item in dj_type" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
-            <el-select v-model="query.dy" clearable size="mini" placeholder="请选择电压类型" style="width: 130px;margin:0 5px">
+            <el-select v-model="query.upsType" clearable size="mini" placeholder="请选择电源类型" style="width: 130px;margin:0 5px">
               <el-option v-for="item in dy_type" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </div>
@@ -29,14 +29,14 @@
     </div>
     <el-card :body-style="{padding: 0}" class="table-container" shadow="never">
       <div class="wrapper" style="overflow: hidden">
-        <el-table v-loading="loading" :data="tableData" size="mini" tooltip-effect="dark" style="height:calc(70vh - 42px);overflow:auto">
-          <el-table-column type="index" width="60" label="序号" :index="indexMethod" />
-          <el-table-column prop="name" label="电源名称" />
-          <el-table-column prop="xxx" label="设备编号" />
-          <el-table-column prop="xxx" label="所属分管单位" />
-          <el-table-column prop="xxx" label="电源等级" />
-          <el-table-column prop="xxx" label="电压类型" />
-          <el-table-column prop="xxx" label="最后维护日期" align="center" width="150" />
+        <el-table v-loading="loading" :data="tableList" size="mini" stripe tooltip-effect="dark" height="calc(70vh - 42px)">
+          <el-table-column type="index" width="60" label="序号" align="center" :index="indexMethod" />
+          <el-table-column prop="upsName" label="电源名称" align="center" sortable />
+          <el-table-column prop="upsIP" label="IP地址" align="center" sortable />
+          <el-table-column prop="branch" label="所属分管单位" align="center" sortable />
+          <el-table-column prop="upsLevel" label="电源等级" align="center" width="220" sortable />
+          <el-table-column prop="upsType" label="电源类型" align="center" sortable />
+          <el-table-column prop="maintenanceTime" label="最后维护日期" align="center" width="150" sortable />
           <el-table-column label="操作" align="center" width="120">
             <template slot-scope="scope">
               <el-tooltip content="编辑"><el-button round plain type="primary" size="mini" icon="el-icon-edit-outline" @click="toEdit(scope.row)" /></el-tooltip>
@@ -82,18 +82,19 @@ export default {
       pageSize: 20,
       total: 0,
       query: {
-        name: '',
-        code: '',
-        dw: '',
-        dj: ''
+        upsName: '',
+        upsIP: '',
+        branch: '',
+        upsLevel: '',
+        upsType: ''
       },
-      tableData: [
-        { name: '1号总电源', xxx: '123456' }, { name: '1号总电源', xxx: '123456' }, { name: '1号总电源', xxx: '123456' }, { name: '1号总电源', xxx: '123456' }, { name: '1号总电源', xxx: '123456' }
-      ]
+      tableData: [],
+      tableList: []
     }
   },
   mounted() {
     this.$nextTick(() => {
+      this.loadData()
     })
   },
   methods: {
@@ -107,13 +108,22 @@ export default {
       this.$refs.editPage.loadData(item)
     },
     toDelete(item) {
-      this.$confirm(`确认删除 ${item.name} 电源设备吗?`, '提示', {
+      this.$confirm(`确认删除 ${item.upsName} 电源设备吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$successMsg('数据删除成功!')
-        this.loadData()
+        this.$post({
+          url: this.$urlPath.deleteUps,
+          data: {
+            id: item.id
+          }
+        }).then((res) => {
+          this.$successMsg(res.msg)
+          this.loadData()
+        }).catch((error) => {
+          this.$errorMsg(error || '接口调用失败，未知异常')
+        })
       })
     },
     toSearch() {
@@ -133,8 +143,50 @@ export default {
       this.pageSize = e
       this.loadData()
     },
+    dataFilter() {
+      if (this.query.upsName) {
+        this.tableData = this.tableData.filter(item => {
+          return item.upsName.indexOf(this.query.upsName) >= 0
+        })
+      }
+      if (this.query.upsIP) {
+        this.tableData = this.tableData.filter(item => {
+          return item.upsIP.indexOf(this.query.upsIP) >= 0
+        })
+      }
+      if (this.query.branch) {
+        this.tableData = this.tableData.filter(item => {
+          return item.branch.indexOf(this.query.branch) >= 0
+        })
+      }
+      if (this.query.upsLevel) {
+        this.tableData = this.tableData.filter(item => {
+          return item.upsLevel.indexOf(this.query.upsLevel) >= 0
+        })
+      }
+      if (this.query.upsType) {
+        this.tableData = this.tableData.filter(item => {
+          return item.upsType.indexOf(this.query.upsType) >= 0
+        })
+      }
+      this.total = this.tableData.length
+      this.tableList = this.tableData.slice((this.page - 1) * this.pageSize, this.page * this.pageSize)
+    },
     loadData() {
-
+      this.tableList = []
+      this.$post({
+        url: this.$urlPath.ShowUpsList,
+        data: {
+          page: this.page,
+          pageSize: this.pageSize,
+          ...this.query
+        }
+      }).then((res) => {
+        this.tableData = res.ShowUps || []
+        this.dataFilter()
+      }).catch((error) => {
+        this.$errorMsg(error || '接口调用失败，未知异常')
+      })
     }
   }
 }

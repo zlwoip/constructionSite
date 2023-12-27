@@ -2,24 +2,24 @@
   <!-- 表单渲染 -->
   <el-dialog append-to-body :close-on-click-modal="false" :before-close="cancelView" :visible="visible" :title="title" width="680px">
     <el-form ref="formViewRef" :model="formData" :rules="rules" :status-icon="true" label-width="200px">
-      <el-form-item label="电源名称：" class="form-cell" prop="xxx">
+      <el-form-item label="电源名称：" class="form-cell" prop="name">
         <div class="cell-box">
           <el-input v-model="formData.name" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="设备编号：" class="form-cell" prop="xxx">
+      <el-form-item label="设备编号：" class="form-cell" prop="code">
         <div class="cell-box">
           <el-input v-model="formData.code" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="所属分管单位：" class="form-cell" prop="xxx">
+      <el-form-item label="所属分管单位：" class="form-cell" prop="dw">
         <div class="cell-box">
           <el-select v-model="formData.dw" size="mini" placeholder="请选择所属分管单位" class="cell-select">
             <el-option v-for="item in dw_type" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </div>
       </el-form-item>
-      <el-form-item label="IP地址：" class="form-cell" prop="xxx">
+      <el-form-item label="IP地址：" class="form-cell" prop="ip">
         <div class="cell-box">
           <el-input v-model="formData.ip" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
@@ -30,10 +30,10 @@
           <el-input v-model="item.address" size="mini" placeholder="请输入端口地址" class="cell-input" style="width: 120px;margin: 0 5px" />
           <el-input v-model="item.code" size="mini" placeholder="请输入编码" class="cell-input" style="width: 120px" />
           <el-tooltip v-if="index+1>=formData.portList.length" content="添加">
-            <el-button circle size="mini" icon="el-icon-plus" style="margin: 0 5px" @click="addDataRow(formData.portList)" />
+            <el-button circle size="mini" icon="el-icon-plus" style="margin: 0 5px" @click="addDataRowPort" />
           </el-tooltip>
           <el-tooltip v-else content="删除">
-            <el-button circle icon="el-icon-delete" size="mini" style="margin: 0 5px" @click="delDataRow(index, formData.portList)" />
+            <el-button circle icon="el-icon-delete" size="mini" style="margin: 0 5px" @click="delDataRow(index, 'portList')" />
           </el-tooltip>
         </div>
       </el-form-item>
@@ -43,10 +43,10 @@
           <el-input v-model="item.model" size="mini" placeholder="请输入电源型号" class="cell-input" style="width: 120px;margin: 0 5px" />
           <el-input v-model="item.code" size="mini" placeholder="请输入编码" class="cell-input" style="width: 120px" />
           <el-tooltip v-if="index+1>=formData.upsList.length" content="添加">
-            <el-button circle size="mini" icon="el-icon-plus" style="margin: 0 5px" @click="addDataRow(formData.upsList)" />
+            <el-button circle size="mini" icon="el-icon-plus" style="margin: 0 5px" @click="addDataRowUps" />
           </el-tooltip>
           <el-tooltip v-else content="删除">
-            <el-button circle icon="el-icon-delete" size="mini" style="margin: 0 5px" @click="delDataRow(index, formData.upsList)" />
+            <el-button circle icon="el-icon-delete" size="mini" style="margin: 0 5px" @click="delDataRow(index, 'upsList')" />
           </el-tooltip>
         </div>
       </el-form-item>
@@ -83,20 +83,23 @@ export default {
       },
       rules: {
         name: { required: true, message: '请填写电源名称', trigger: 'blur' },
-        xxx: { required: true, message: '请选择所属分管单位', trigger: 'blur' }
+        dw: { required: true, message: '请选择所属分管单位', trigger: 'blur' },
+        ip: { required: true, message: '请填写ip地址', trigger: 'blur' }
       }
     }
   },
   mounted() {
   },
   methods: {
-    delDataRow(index, arrList) {
+    delDataRow(index, keyList) {
+      const arrList = this.formData[keyList]
       if (arrList.length > 1) {
         arrList.splice(index, 1)
         this.$successMsg('行数据删除成功!')
       }
     },
-    addDataRow(arrList) {
+    addDataRowPort() {
+      const arrList = this.formData.portList
       const rowObj = arrList.pop()
       for (const key in rowObj) {
         if (rowObj[key] === '') {
@@ -105,7 +108,19 @@ export default {
         }
       }
       arrList.push(rowObj)
-      arrList.push({ index: '', productId: '' })
+      arrList.push({ name: '', address: '', code: '' })
+    },
+    addDataRowUps() {
+      const arrList = this.formData.upsList
+      const rowObj = arrList.pop()
+      for (const key in rowObj) {
+        if (rowObj[key] === '') {
+          this.$errorMsg('信息不完整，无法添加该行数据！')
+          return arrList.push(rowObj)
+        }
+      }
+      arrList.push(rowObj)
+      arrList.push({ name: '', model: '', code: '' })
     },
     showView() {
       this.visible = true

@@ -68,18 +68,27 @@ export const routes = [
         meta: {
           title: '主控台',
           affix: true,
-          cacheable: true
+          cacheable: false
         }
       },
       {
-        path: 'workplace',
-        name: 'WorkPlace',
-        component: () => import('@/views/index/work-place'),
+        path: 'operator',
+        name: 'operator',
+        component: () => import('@/views/device/operator/index'),
         meta: {
-          title: '工作台',
-          cacheable: true
+          title: '值机员',
+          cacheable: false
         }
       }
+      // {
+      //   path: 'workplace',
+      //   name: 'WorkPlace',
+      //   component: () => import('@/views/index/work-place'),
+      //   meta: {
+      //     title: '工作台',
+      //     cacheable: true
+      //   }
+      // }
     ]
   }
 ]

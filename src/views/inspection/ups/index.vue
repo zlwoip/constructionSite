@@ -28,7 +28,7 @@
     <el-card :body-style="{padding: 0}" class="table-container" shadow="never">
       <div class="wrapper" :style="{background:waterMark?`url(${waterMark.toDataURL('image/png')}) left top repeat`:``}">
         <el-timeline>
-          <el-timeline-item v-for="(item,index) in tableList" :key="'tm_'+index" :timestamp="item.dateTime" placement="top">
+          <el-timeline-item v-for="(item,index) in tableList" :key="'tm_'+index" :timestamp="item.dateTime" :type="item.completed?(item.errorNum?(!item.dispose?'danger':'warning'):'success'):(item.status===3?'primary':(item.status===2?'info':''))" placement="top">
             <el-card v-if="item.completed">
               <div style="font-size: 16px;color: #999999">
                 <span style="font-size: 20px;font-weight: bold;color: black">{{ item.name }}</span>
@@ -368,7 +368,7 @@ export default {
       canvas.width = canvas.height = 160
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.globalAlpha = 0.08
+      ctx.globalAlpha = 0.12
       ctx.font = '20px Microsoft Yahei'
       ctx.translate(80, 80)
       ctx.rotate(-Math.PI / 4)

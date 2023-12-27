@@ -74,14 +74,15 @@ import ImageMobileBg1 from '@/assets/img_login_mobile_bg_01.png'
 import PageFooter from '@/layouts/footer'
 import VawVerify from 'vaw-verify'
 import 'vaw-verify/lib/vaw-verify.css'
+// import { randomString } from '@/utils/utils'
 
 export default {
   name: 'Login',
   components: { PageFooter, VawVerify },
   data() {
     return {
-      username: 'admin',
-      password: '123456',
+      username: 'yunwei',
+      password: 'zqd#niu2013',
       ImageBg1,
       ImageMobileBg1,
       redirect: '',
@@ -125,23 +126,22 @@ export default {
         url: this.$urlPath.login,
         data: {
           username: this.username,
-          password: this.password,
-          authLogin: this.authLogin ? '1' : '0'
+          pass: this.password
+          // authLogin: this.authLogin ? '1' : '0'
         }
+      }).then((res) => {
+        this.$successMsg(res.msg)
+        this.$store
+          .dispatch('user/saveUserInfo', res.data)
+          .then((_) => {
+            this.$router.push({ path: this.redirect || '/index/main' })
+          })
+          .catch((error) => {
+            this.$errorMsg(error || '登录失败，未知异常')
+          })
+      }).catch((error) => {
+        this.$errorMsg(error || '登录失败，未知异常')
       })
-        .then((res) => {
-          this.$store
-            .dispatch('user/saveUserInfo', res.data)
-            .then((_) => {
-              this.$router.push({ path: this.redirect || '/index/main' })
-            })
-            .catch((error) => {
-              this.$errorMsg(error.message || '登录失败，未知异常')
-            })
-        })
-        .catch((error) => {
-          this.$errorMsg(error.message || '登录失败，未知异常')
-        })
     },
     onVerifySuccess() {
       this.verifyState = true

@@ -24,8 +24,8 @@
     </div>
     <el-card :body-style="{padding: 0}" class="table-container" shadow="never">
       <div class="wrapper" style="overflow: hidden">
-        <el-table v-loading="loading" :data="tableData" size="mini" tooltip-effect="dark" style="height:calc(70vh - 42px);overflow:auto">
-          <el-table-column type="index" width="60" label="序号" :index="indexMethod" />
+        <el-table v-loading="loading" :data="tableData" size="mini" stripe tooltip-effect="dark" height="calc(70vh - 42px)">
+          <el-table-column type="index" width="60" label="序号" align="center" :index="indexMethod" />
           <el-table-column align="center" type="expand">
             <template slot-scope="scope">
               <div class="table-card-box">
@@ -70,21 +70,21 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="交换机名称" />
-          <el-table-column prop="code" label="设备编号" />
-          <el-table-column prop="dw" label="所属分管单位" />
-          <el-table-column prop="ip" label="IP地址" />
-          <el-table-column label="端口数量" align="center" width="80">
+          <el-table-column prop="name" label="交换机名称" sortable />
+          <el-table-column prop="code" label="设备编号" align="center" sortable />
+          <el-table-column prop="dw" label="所属分管单位" align="center" sortable />
+          <el-table-column prop="ip" label="IP地址" align="center" sortable />
+          <el-table-column label="端口数量" align="center" width="100" sortable>
             <template slot-scope="scope">
               {{ scope.row.portList.length || '暂无' }}
             </template>
           </el-table-column>
-          <el-table-column label="电源数量" align="center" width="80">
+          <el-table-column label="电源数量" align="center" width="100" sortable>
             <template slot-scope="scope">
               {{ scope.row.upsList.length || '暂无' }}
             </template>
           </el-table-column>
-          <el-table-column prop="dataTime" label="最后维护日期" align="center" width="150" />
+          <el-table-column prop="dataTime" label="最后维护日期" align="center" width="150" sortable />
           <el-table-column label="操作" align="center" width="120">
             <template slot-scope="scope">
               <el-tooltip content="编辑"><el-button round plain type="primary" size="mini" icon="el-icon-edit-outline" @click="toEdit(scope.row)" /></el-tooltip>

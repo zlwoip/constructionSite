@@ -13,7 +13,23 @@ module.exports = {
   devServer: {
     hot: true,
     port: 5566,
-    open: true
+    open: true,
+    proxy: {
+      '/interface': {
+        target: process.env.VUE_APP_BASE_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/interface': 'interface'
+        }
+      },
+      '/auth': {
+        target: process.env.VUE_APP_BASE_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/auth': 'auth'
+        }
+      }
+    }
   },
   chainWebpack(config) {
     if (process.env.NODE_ENV === 'production') {

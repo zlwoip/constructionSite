@@ -2,33 +2,33 @@
   <!-- 表单渲染 -->
   <el-dialog append-to-body :close-on-click-modal="false" :before-close="cancelView" :visible="visible" :title="title" width="540px">
     <el-form ref="formViewRef" :model="formData" :rules="rules" :status-icon="true" label-width="200px">
-      <el-form-item label="电源名称：" class="form-cell" prop="xxx">
+      <el-form-item label="电源名称：" class="form-cell" prop="upsName">
         <div class="cell-box">
-          <el-input v-model="formData.name" size="mini" placeholder="单行文本输入" class="cell-input" />
+          <el-input v-model="formData.upsName" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="设备编号：" class="form-cell" prop="xxx">
+      <el-form-item label="IP地址：" class="form-cell" prop="upsIP">
         <div class="cell-box">
-          <el-input v-model="formData.name" size="mini" placeholder="单行文本输入" class="cell-input" />
+          <el-input v-model="formData.upsIP" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="所属分管单位：" class="form-cell" prop="xxx">
+      <el-form-item label="所属分管单位：" class="form-cell" prop="branch">
         <div class="cell-box">
-          <el-select v-model="formData.xxx" size="mini" placeholder="请选择所属分管单位" class="cell-select">
+          <el-select v-model="formData.branch" size="mini" placeholder="请选择所属分管单位" class="cell-select">
             <el-option v-for="item in dw_type" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </div>
       </el-form-item>
-      <el-form-item label="电源等级：" class="form-cell" prop="xxx">
+      <el-form-item label="电源等级：" class="form-cell" prop="upsLevel">
         <div class="cell-box">
-          <el-select v-model="formData.xxx" size="mini" placeholder="请选择电源等级" class="cell-select">
+          <el-select v-model="formData.upsLevel" size="mini" placeholder="请选择电源等级" class="cell-select">
             <el-option v-for="item in dj_type" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </div>
       </el-form-item>
-      <el-form-item label="电压类型：" class="form-cell" prop="xxx">
+      <el-form-item label="电源类型：" class="form-cell" prop="upsType">
         <div class="cell-box">
-          <el-select v-model="formData.xxx" size="mini" placeholder="请选择电压类型" class="cell-select">
+          <el-select v-model="formData.upsType" size="mini" placeholder="请选择电压类型" class="cell-select">
             <el-option v-for="item in dy_type" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </div>
@@ -41,7 +41,6 @@
   </el-dialog>
 </template>
 <script>
-
 export default {
   data() {
     return {
@@ -66,12 +65,18 @@ export default {
       ],
       title: 'ups设备信息录入',
       formData: {
-        name: '',
-        xxx: ''
+        upsName: '',
+        upsIP: '',
+        branch: '',
+        upsLevel: '',
+        upsType: ''
       },
       rules: {
-        name: { required: true, message: '请填写电源名称', trigger: 'blur' },
-        xxx: { required: true, message: '请选择所属分管单位', trigger: 'blur' }
+        upsName: { required: true, message: '请填写电源名称', trigger: 'blur' },
+        upsIP: { required: true, message: '请填写电源IP', trigger: 'blur' },
+        branch: { required: true, message: '请选择所属分管单位', trigger: 'blur' },
+        upsLevel: { required: true, message: '请选择所属分管单位', trigger: 'blur' },
+        upsType: { required: true, message: '请选择所属分管单位', trigger: 'blur' }
       }
     }
   },
@@ -91,7 +96,18 @@ export default {
     submitForm(isRelease) {
       this.$refs.formViewRef.validate((valid, obj) => {
         if (valid) {
-          this.cancelView()
+          this.$post({
+            url: this.formData.id ? this.$urlPath.updateUps : this.$urlPath.addUps,
+            data: {
+              ...this.formData
+            }
+          }).then((res) => {
+            this.$successMsg(res.msg)
+            this.cancelView()
+            this.$parent.loadData()
+          }).catch((error) => {
+            this.$errorMsg(error || '接口调用失败，未知异常')
+          })
         } else {
           this.$message({
             message: '表单信息有误，请核对无误后提交！',
@@ -101,6 +117,19 @@ export default {
       })
     },
     loadData(item) {
+      if (item) {
+        this.formData = item
+        this.title = 'ups信息编辑'
+      } else {
+        this.formData = {
+          upsName: '',
+          upsIP: '',
+          branch: '',
+          upsLevel: '',
+          upsType: ''
+        }
+        this.title = 'ups信息录入'
+      }
       this.showView()
     }
   }

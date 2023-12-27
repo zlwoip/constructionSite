@@ -1,29 +1,16 @@
 import router from '@/router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import store from '@/store'
-import service from '@/api/axios.config'
+// import store from '@/store'
+// import service from '@/api/axios.config'
 import LayoutStore, { Layout } from '@/layouts/index'
 import { routes as constantRoutes } from '@/router'
-import { baseAddress, getMenuListByRoleId } from '@/api/url'
+// import { baseAddress, getMenuListByRoleId } from '@/api/url'
 
 import Cookies from 'js-cookie'
 import { toHump } from './utils'
 
 NProgress.configure({ showSpinner: false })
-
-function getRoutes() {
-  return service({
-    url: baseAddress + getMenuListByRoleId,
-    method: 'POST',
-    data: {
-      userId: store.state.user.userId,
-      roleId: store.state.user.roleId
-    }
-  }).then(res => {
-    return generatorRoutes(res.data)
-  })
-}
 
 function getComponent(it) {
   return resolve => {
@@ -96,17 +83,47 @@ router.beforeEach((to, from, next) => {
       if (isEmptyRoute) {
         // 加载路由
         const accessRoutes = []
-        getRoutes().then(async routes => {
-          accessRoutes.push(...routes)
-          accessRoutes.push({
-            path: '*',
-            redirect: '/404',
-            hidden: true
-          })
-          LayoutStore.initPermissionRoute([...constantRoutes, ...accessRoutes])
-          router.addRoutes(accessRoutes)
-          next({ ...to, replace: true })
+        const routes = generatorRoutes([
+          {
+            menuUrl: '/inspection',
+            menuName: '设备巡检',
+            icon: 'list',
+            children: [
+              {
+                menuUrl: '/inspection/switchboard/index',
+                menuName: '交换机巡检'
+              },
+              {
+                menuUrl: '/inspection/ups/index',
+                menuName: 'UPS巡检'
+              }
+            ]
+          },
+          {
+            menuUrl: '/device',
+            menuName: '设备运维',
+            icon: 'list',
+            children: [
+              {
+                menuUrl: '/device/switchboard/index',
+                menuName: '交换机设备'
+              },
+              {
+                menuUrl: '/device/ups/index',
+                menuName: 'UPS设备'
+              }
+            ]
+          }
+        ])
+        accessRoutes.push(...routes)
+        accessRoutes.push({
+          path: '*',
+          redirect: '/404',
+          hidden: true
         })
+        LayoutStore.initPermissionRoute([...constantRoutes, ...accessRoutes])
+        router.addRoutes(accessRoutes)
+        next({ ...to, replace: true })
       } else {
         next()
       }

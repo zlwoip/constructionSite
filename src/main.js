@@ -7,7 +7,7 @@ import './utils'
 import '@/styles/index.scss'
 import './api/http'
 
-import '../mock'
+// import '../mock'
 
 import '@/components/common'
 

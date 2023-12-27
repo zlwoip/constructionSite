@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import qs from 'qs'
 
-const baseIp = 'http://localhost:80801/'
+// const baseIp = 'http://10.253.183.170/'
 
 export const CONTENT_TYPE = 'Content-Type'
 
@@ -12,7 +12,8 @@ export const APPLICATION_JSON = 'application/json; charset=UTF-8'
 export const TEXT_PLAIN = 'text/plain; charset=UTF-8'
 
 const service = Axios.create({
-  baseURL: baseIp,
+  // baseURL: baseIp,
+  baseURL: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_BASE_API : '/', // api 的 base_url
   timeout: 10 * 60 * 1000,
   withCredentials: true // 跨域请求时发送cookie
 })
@@ -21,7 +22,7 @@ service.interceptors.request.use(
   config => {
     !config.headers && (config.headers = {})
     if (!config.headers[CONTENT_TYPE]) {
-      config.headers[CONTENT_TYPE] = APPLICATION_JSON
+      config.headers[CONTENT_TYPE] = FORM_URLENCODED
     }
     if (config.headers[CONTENT_TYPE] === FORM_URLENCODED) {
       config.data = qs.stringify(config.data)

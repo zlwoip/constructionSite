@@ -2,7 +2,7 @@ export const baseAddress = 'http://localhost:8080'
 
 export const test = '/test'
 
-export const login = '/login'
+export const login = '/interface/InspectionPerson.asmx/Login'
 
 export const updateUserInfo = '/updateUser'
 
@@ -29,3 +29,13 @@ export const getTableList = '/getTableList'
 export const getCardList = '/getCardList'
 
 export const getCommentList = '/getCommentList'
+
+export const ShowInspectionPersonList = '/interface/InspectionPerson.asmx/ShowInspectionPersonList'
+export const addInspectionPerson = '/interface/InspectionPerson.asmx/addInspectionPerson'
+export const updateInspectionPerson = '/interface/InspectionPerson.asmx/updateInspectionPerson'
+export const deleteInspectionPerson = '/interface/InspectionPerson.asmx/deleteInspectionPerson'
+
+export const addUps = '/interface/ups.asmx/addUps'
+export const deleteUps = '/interface/ups.asmx/deleteUps'
+export const updateUps = '/interface/ups.asmx/updateUps'
+export const ShowUpsList = '/interface/ups.asmx/ShowUpsList'

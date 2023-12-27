@@ -87,6 +87,15 @@ export default {
     },
     loadData() {
       this.formData.dateTime = this.getNowDateTime()
+      this.$post({
+        url: this.$urlPath.ShowInspectionPersonList,
+      }).then((res) => {
+        this.inspectorList = (res.inspectionPersonList || []).filter(item => {
+          return item.state !== '0'
+        })
+      }).catch((error) => {
+        this.$errorMsg(error || '接口调用失败，未知异常')
+      })
       this.showView()
     }
   }

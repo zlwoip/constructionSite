@@ -279,7 +279,7 @@ export default {
       canvas.width = canvas.height = 160
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.globalAlpha = 0.08
+      ctx.globalAlpha = 0.12
       ctx.font = '20px Microsoft Yahei'
       ctx.translate(80, 80)
       ctx.rotate(-Math.PI / 4)
