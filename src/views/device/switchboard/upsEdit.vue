@@ -2,21 +2,14 @@
   <!-- 表单渲染 -->
   <el-dialog append-to-body :close-on-click-modal="false" :before-close="cancelView" :visible="visible" :title="title" width="580px">
     <el-form ref="formViewRef" :model="formData" :rules="rules" :status-icon="true" label-width="220px">
-      <el-form-item label="交换机名称：" class="form-cell" prop="name">
+      <el-form-item label="电源名称：" class="form-cell" prop="name">
         <div class="cell-box">
           <el-input v-model="formData.name" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="IP地址：" class="form-cell" prop="ip">
+      <el-form-item label="设备OID：" class="form-cell" prop="code">
         <div class="cell-box">
-          <el-input v-model="formData.ip" size="mini" placeholder="单行文本输入" class="cell-input" />
-        </div>
-      </el-form-item>
-      <el-form-item label="所属分管单位：" class="form-cell" prop="dw">
-        <div class="cell-box">
-          <el-select v-model="formData.dw" size="mini" placeholder="请选择所属分管单位" class="cell-select">
-            <el-option v-for="item in dw_type" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+          <el-input v-model="formData.code" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
     </el-form>
@@ -41,16 +34,10 @@ export default {
       title: '',
       formData: {
         name: '',
-        code: '',
-        dw: '',
-        ip: '',
-        upsList: [],
-        portList: []
+        code: ''
       },
       rules: {
-        name: { required: true, message: '请填写电源名称', trigger: 'blur' },
-        dw: { required: true, message: '请选择所属分管单位', trigger: 'blur' },
-        ip: { required: true, message: '请填写ip地址', trigger: 'blur' }
+        name: { required: true, message: '请填写电源名称', trigger: 'blur' }
       }
     }
   },
@@ -82,15 +69,13 @@ export default {
     loadData(item) {
       if (item) {
         this.formData = item
-        this.title = '交换机信息编辑'
+        this.title = '新增电源'
       } else {
         this.formData = {
           name: '',
-          code: '',
-          dw: '',
-          ip: ''
+          code: ''
         }
-        this.title = '交换机信息录入'
+        this.title = '编辑电源'
       }
       this.showView()
     }

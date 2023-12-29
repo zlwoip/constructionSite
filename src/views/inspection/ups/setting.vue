@@ -9,7 +9,7 @@
     top="25vh"
     width="590px"
   >
-    <el-form ref="formViewRef" :model="formData" :rules="rules" size="mini" :status-icon="true" label-width="180px">
+    <el-form ref="formViewRef" :model="formData" :rules="rules" size="mini" :status-icon="true" label-width="170px">
       <el-form-item label="三相输入电压：" class="form-cell" style="margin: 0;padding: 0">
         <div class="cell-box" style="display: flex">
           <el-form-item prop="minInputTPE">
@@ -55,16 +55,16 @@
           </el-form-item>
         </div>
       </el-form-item>
-      <el-form-item label="标准输出电压：" class="form-cell" style="margin: 0;padding: 0">
+      <el-form-item label="标准输入电压：" class="form-cell" style="margin: 0;padding: 0">
         <div class="cell-box" style="display: flex">
           <el-form-item prop="minOutputPE">
-            <el-input v-model.number="formData.minOutputPE" size="mini" placeholder="阈值下限" class="cell-input">
+            <el-input v-model.number="formData.minInputPE" size="mini" placeholder="阈值下限" class="cell-input">
               <template slot="append">下限 V</template>
             </el-input>
           </el-form-item>
           <div style="width: 20px;text-align: center">~</div>
           <el-form-item prop="maxOutputPE">
-            <el-input v-model.number="formData.maxOutputPE" size="mini" placeholder="阈值上限" class="cell-input">
+            <el-input v-model.number="formData.maxInputPE" size="mini" placeholder="阈值上限" class="cell-input">
               <template slot="append">上限 V</template>
             </el-input>
           </el-form-item>
@@ -109,6 +109,8 @@
 </template>
 <script>
 
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -133,6 +135,11 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters({
+      upsConfig: 'config/getUpsConfig'
+    })
+  },
   mounted() {
   },
   methods: {
@@ -149,8 +156,11 @@ export default {
     submitForm() {
       this.$refs.formViewRef.validate((valid, obj) => {
         if (valid) {
-          console.log(this.formData)
-          this.cancelView()
+          this.$store.dispatch('config/saveUpsConfig', this.formData).then(() => {
+            this.$successMsg('ups监听设置已更新')
+            this.cancelView()
+            this.$router.go(0)
+          })
         } else {
           this.$message({
             message: '表单信息有误，请核对无误后提交！',
@@ -160,6 +170,20 @@ export default {
       })
     },
     loadData() {
+      this.formData = {
+        minInputTPE: this.upsConfig.minInputTPE || '',
+        maxInputTPE: this.upsConfig.maxInputTPE || '',
+        minOutputTPE: this.upsConfig.minOutputTPE || '',
+        maxOutputTPE: this.upsConfig.maxOutputTPE || '',
+        minInputPE: this.upsConfig.minInputPE || '',
+        maxInputPE: this.upsConfig.maxInputPE || '',
+        minOutputPE: this.upsConfig.minOutputPE || '',
+        maxOutputPE: this.upsConfig.maxOutputPE || '',
+        minHeat: this.upsConfig.minHeat || '',
+        maxHeat: this.upsConfig.maxHeat || '',
+        minLoad: this.upsConfig.minLoad || '',
+        maxLoad: this.upsConfig.maxLoad || ''
+      }
       this.showView()
     }
   }
@@ -171,7 +195,7 @@ export default {
   min-width: 120px;
 
   .cell-input {
-    width: 150px;
+    width: 160px;
   }
 
   .cell-select {

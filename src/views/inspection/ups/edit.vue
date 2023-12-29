@@ -18,7 +18,7 @@
       <el-form-item label="巡检员：" class="form-cell" prop="inspector">
         <div class="cell-box">
           <el-select v-model="formData.inspector" placeholder="请选择" size="mini" class="cell-select">
-            <el-option v-for="item in inspectorList" :key="item.id" :label="item.name" :value="item.name" />
+            <el-option v-for="item in inspectorList" :key="item.id" :label="item.name" :value="item.name" @click.native="formData.signImg=item.imagePath" />
           </el-select>
         </div>
       </el-form-item>
@@ -36,16 +36,11 @@ export default {
     return {
       visible: false,
       title: '新增巡检计划',
-      inspectorList: [
-        { name: '张某某', id: 1 },
-        { name: '赵某某', id: 2 },
-        { name: '王某某', id: 3 },
-        { name: '李某某', id: 4 },
-        { name: '孙某某', id: 5 }
-      ],
+      inspectorList: [],
       formData: {
         dateTime: '',
-        inspector: ''
+        inspector: '',
+        signImg: ''
       },
       rules: {
         dateTime: { required: true, message: '请选择巡巡检时间', trigger: 'blur' },
@@ -88,7 +83,7 @@ export default {
     loadData() {
       this.formData.dateTime = this.getNowDateTime()
       this.$post({
-        url: this.$urlPath.ShowInspectionPersonList,
+        url: this.$urlPath.ShowInspectionPersonList
       }).then((res) => {
         this.inspectorList = (res.inspectionPersonList || []).filter(item => {
           return item.state !== '0'

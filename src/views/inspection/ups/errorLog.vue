@@ -9,91 +9,82 @@
     top="20vh"
     width="960px"
   >
-    <div v-if="dataObj.errorNum">
-      <div v-if="nodelist0.length" class="table-card-box">
-        <div class="table-card-title">总前端120KVA-UPS系统</div>
-        <table class="table">
-          <tr class="tr">
-            <th class="th">电源</th>
-            <th class="th">温度 (℃)</th>
-            <th class="th">输入电压A (V)</th>
-            <th class="th">输入电压B (V)</th>
-            <th class="th">输入电压C (V)</th>
-            <th class="th">输出电压A (V)</th>
-            <th class="th">输出电压B (V)</th>
-            <th class="th">输出电压C (V)</th>
-            <th class="th">负载A (%)</th>
-            <th class="th">负载B (%)</th>
-            <th class="th">负载C (%)</th>
-          </tr>
-          <tr v-for="(n0, i0) in nodelist0" :key="'n_'+'_'+i0" class="tr">
-            <td class="td">{{ n0.name }}</td>
-            <td class="td">{{ n0.heat }}</td>
-            <td class="td">{{ n0.inputA }}</td>
-            <td class="td">{{ n0.inputB }}</td>
-            <td class="td">{{ n0.inputC }}</td>
-            <td class="td">{{ n0.outputA }}</td>
-            <td class="td">{{ n0.outputB }}</td>
-            <td class="td">{{ n0.outputC }}</td>
-            <td class="td">{{ n0.loadA }}</td>
-            <td class="td">{{ n0.loadB }}</td>
-            <td class="td">{{ n0.loadC }}</td>
-          </tr>
-        </table>
-      </div>
-      <div v-if="nodelist1.length" class="table-card-box">
-        <div class="table-card-title">一级分前端10KVA-UPS系统</div>
-        <table class="table">
-          <tr class="tr">
-            <th class="th">分公司</th>
-            <th class="th">分前端</th>
-            <th class="th">温度 (℃)</th>
-            <th class="th">输入电压 (V)</th>
-            <th class="th">输出电压 (V)</th>
-            <th class="th">负载 (%)</th>
-            <th class="th">异常原因</th>
-          </tr>
-          <tr v-for="(n1, i1) in nodelist1" :key="'n_'+'_'+i1" class="tr">
-            <td class="td">{{ n1.org }}</td>
-            <td class="td">{{ n1.name }}</td>
-            <td :class="n1.heat>50?'td warn':'td'">{{ n1.heat }}</td>
-            <td :class="n1.input<225?'td warn':'td'">{{ n1.input }}</td>
-            <td :class="n1.output<50?'td warn':'td'">{{ n1.output }}</td>
-            <td :class="n1.load>50?'td warn':'td'">{{ n1.load }}</td>
-            <td class="td">{{ n1.remarks }}</td>
-          </tr>
-        </table>
-      </div>
-      <div v-if="nodelist2.length" class="table-card-box">
-        <div class="table-card-title">二级分前端及乡镇广播站10KVA-UPS系统</div>
-        <table class="table">
-          <tr class="tr">
-            <th class="th">分公司</th>
-            <th class="th">分前端</th>
-            <th class="th">温度 (℃)</th>
-            <th class="th">输入电压 (V)</th>
-            <th class="th">输出电压 (V)</th>
-            <th class="th">负载 (%)</th>
-            <th class="th">异常原因</th>
-          </tr>
-          <tr v-for="(n2, i2) in nodelist2" :key="'n_'+'_'+i2" class="tr">
-            <td class="td">{{ n2.org }}</td>
-            <td class="td">{{ n2.name }}</td>
-            <td :class="n2.heat>50?'td warn':'td'">{{ n2.heat }}</td>
-            <td :class="n2.input<225?'td warn':'td'">{{ n2.input }}</td>
-            <td :class="n2.output<50?'td warn':'td'">{{ n2.output }}</td>
-            <td :class="n2.load>50?'td warn':'td'">{{ n2.load }}</td>
-            <td class="td">{{ n2.remarks }}</td>
-          </tr>
-        </table>
-      </div>
+    <div v-if="upsList[0].length" class="table-card-box">
+      <div class="table-card-title">总前端120KVA-UPS系统</div>
+      <table class="table">
+        <tr class="tr">
+          <th class="th">电源</th>
+          <th class="th">温度 (℃)</th>
+          <th class="th">输入电压A (V)</th>
+          <th class="th">输入电压B (V)</th>
+          <th class="th">输入电压C (V)</th>
+          <th class="th">输出电压A (V)</th>
+          <th class="th">输出电压B (V)</th>
+          <th class="th">输出电压C (V)</th>
+          <th class="th">负载A (%)</th>
+          <th class="th">负载B (%)</th>
+          <th class="th">负载C (%)</th>
+        </tr>
+        <tr v-for="(n0, i0) in upsList[0]" :key="'n_'+'_'+i0" class="tr">
+          <td class="td">{{ n0.name }}</td>
+          <td class="td" :style="{'color':n0.vh?'#f00':''}" :title="n0.vh||''">{{ n0.heat }}</td>
+          <td class="td" :style="{'color':n0.via?'#f00':''}" :title="n0.via||''">{{ n0.inputA }}</td>
+          <td class="td" :style="{'color':n0.vib?'#f00':''}" :title="n0.vib||''">{{ n0.inputB }}</td>
+          <td class="td" :style="{'color':n0.vic?'#f00':''}" :title="n0.vic||''">{{ n0.inputC }}</td>
+          <td class="td" :style="{'color':n0.voa?'#f00':''}" :title="n0.voa||''">{{ n0.outputA }}</td>
+          <td class="td" :style="{'color':n0.vob?'#f00':''}" :title="n0.vob||''">{{ n0.outputB }}</td>
+          <td class="td" :style="{'color':n0.voc?'#f00':''}" :title="n0.voc||''">{{ n0.outputC }}</td>
+          <td class="td" :style="{'color':n0.vla?'#f00':''}" :title="n0.vla||''">{{ n0.loadA }}</td>
+          <td class="td" :style="{'color':n0.vlb?'#f00':''}" :title="n0.vlb||''">{{ n0.loadB }}</td>
+          <td class="td" :style="{'color':n0.vlc?'#f00':''}" :title="n0.vlc||''">{{ n0.loadC }}</td>
+        </tr>
+      </table>
     </div>
-    <div v-else style="text-align: center;font-size: 20px;font-weight: bold">
-      一切正常 <i class="el-icon-success" style="color:#00CD66"></i>
+    <div v-if="upsList[1].length" class="table-card-box">
+      <div class="table-card-title">一级分前端10KVA-UPS系统</div>
+      <table class="table">
+        <tr class="tr">
+          <th class="th">分公司</th>
+          <th class="th">分前端</th>
+          <th class="th">温度 (℃)</th>
+          <th class="th">输入电压 (V)</th>
+          <th class="th">输出电压 (V)</th>
+          <th class="th">负载 (%)</th>
+        </tr>
+        <tr v-for="(n1, i1) in upsList[1]" :key="'n_'+'_'+i1" class="tr">
+          <td class="td">{{ n1.org }}</td>
+          <td class="td">{{ n1.name }}</td>
+          <td class="td" :style="{'color':n1.vh?'#f00':''}" :title="n1.vh||''">{{ n1.heat }}</td>
+          <td class="td" :style="{'color':n1.vi?'#f00':''}" :title="n1.vi||''">{{ n1.input }}</td>
+          <td class="td" :style="{'color':n1.vo?'#f00':''}" :title="n1.vo||''">{{ n1.output }}</td>
+          <td class="td" :style="{'color':n1.vl?'#f00':''}" :title="n1.vl||''">{{ n1.load }}</td>
+        </tr>
+      </table>
+    </div>
+    <div v-if="upsList[2].length" class="table-card-box">
+      <div class="table-card-title">二级分前端及乡镇广播站10KVA-UPS系统</div>
+      <table class="table">
+        <tr class="tr">
+          <th class="th">分公司</th>
+          <th class="th">分前端</th>
+          <th class="th">温度 (℃)</th>
+          <th class="th">输入电压 (V)</th>
+          <th class="th">输出电压 (V)</th>
+          <th class="th">负载 (%)</th>
+        </tr>
+        <tr v-for="(n2, i2) in upsList[2]" :key="'n_'+'_'+i2" class="tr">
+          <td class="td">{{ n2.org }}</td>
+          <td class="td">{{ n2.name }}</td>
+          <td class="td" :style="{'color':n2.vh?'#f00':''}" :title="n2.vh||''">{{ n2.heat }}</td>
+          <td class="td" :style="{'color':n2.vi?'#f00':''}" :title="n2.vi||''">{{ n2.input }}</td>
+          <td class="td" :style="{'color':n2.vo?'#f00':''}" :title="n2.vo||''">{{ n2.output }}</td>
+          <td class="td" :style="{'color':n2.vl?'#f00':''}" :title="n2.vl||''">{{ n2.load }}</td>
+        </tr>
+      </table>
     </div>
     <div class="signArea">
       <span>巡检员签字：</span>
-      <img class="signImg" :src="require('@/assets/signImg.png')" />
+      <img v-if="dataObj.signImg" class="signImg" :src="require(`@/assets/signImg/${dataObj.signImg}.png`)" />
       <img v-show="dataObj.dispose" class="signImg" :src="require('@/assets/dispose.png')" height="80px" style="left:440px;transform:rotate(-30deg)" />
     </div>
     <div slot="footer" class="dialog-footer" style="text-align: center">
@@ -109,15 +100,8 @@ export default {
     return {
       visible: false,
       title: '',
-      nodelist0: [],
-      nodelist1: [
-        { org: '环翠分公司', name: '中信苑', heat: 66, input: 225, output: 219, load: 14, remarks: '温度过高' },
-        { org: '环翠分公司', name: '望岛机房', heat: 23, input: 225, output: 219, load: 88, remarks: '负载过高' }
-      ],
-      nodelist2: [
-        { org: '高区分公司', name: '电视台机房', heat: 23, input: 220, output: 207, load: 14, remarks: '输入电压不稳' }
-      ],
-      dataObj: {}
+      dataObj: {},
+      upsList: [[], [], []]
     }
   },
   mounted() {
@@ -133,11 +117,34 @@ export default {
       this.hideView()
     },
     submit() {
-      this.dataObj.dispose = true
+      const cloneObj = JSON.parse(JSON.stringify(this.dataObj))
+      cloneObj.dispose = true
+      this.$post({
+        url: this.$urlPath.UpdateHistoryData,
+        data: {
+          id: cloneObj.id,
+          dataJson: JSON.stringify(cloneObj),
+          handle: null
+        }
+      }).then((res) => {
+        if (res.code === 200) {
+          this.$successMsg(res.msg)
+          this.dataObj.dispose = true
+        } else {
+          this.$errorMsg(res.msg)
+        }
+      }).catch((error) => {
+        this.$errorMsg(error || '接口调用失败，未知异常')
+      })
     },
     loadData(obj) {
       this.dataObj = obj
       this.title = `UPS异常巡检日志 - ${obj.dateTime}`
+      this.upsList = [
+        obj.upsList[0].filter(ups => { return ups.vh || ups.vla || ups.vlb || ups.vlc || ups.via || ups.vib || ups.vic || ups.voa || ups.vob || ups.voc }),
+        obj.upsList[1].filter(ups => { return ups.vh || ups.vl || ups.vi || ups.vo }),
+        obj.upsList[2].filter(ups => { return ups.vh || ups.vl || ups.vi || ups.vo })
+      ]
       this.showView()
     }
   }
@@ -170,7 +177,6 @@ export default {
     font-size: 18px;
     background-color: rgba(0,0,0,0.1);
   }
-
   .table {
     border-collapse: collapse;
     width: 100%;
@@ -179,18 +185,26 @@ export default {
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   }
-
   .th, .td {
     border: 1px solid #ddd;
     padding: 4px;
     border-radius: 5px;
     text-align: center;
   }
-
+  td {
+    opacity: 0.8;
+    cursor: default;
+  }
+  td:hover {
+    opacity: 1;
+  }
   .th {
-    background-color: #f2f2f2;
+    background-color: #e2e2e2;
     font-weight: bold;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+  .bk {
+    background-color: #f2f2f2;
   }
 }
 .cell-box {

@@ -5,12 +5,11 @@
         <div class="wrapper">
           <div class="left-wrapper">
             <span class="label">数据检索条件:</span>
-            <el-input v-model="query.name" clearable size="mini" placeholder="请输入设备名称" style="width: 150px;margin:0 5px" />
-            <el-input v-model="query.code" clearable size="mini" placeholder="请输入设备编号" style="width: 150px;margin:0 5px" />
+            <el-input v-model="query.name" clearable size="mini" placeholder="请输入交换机名称" style="width: 150px;margin:0 5px" />
+            <el-input v-model="query.ip" clearable size="mini" placeholder="请输入IP地址" style="width: 150px;margin:0 5px" />
             <el-select v-model="query.dw" clearable size="mini" placeholder="请选择所属分管单位" style="width: 160px;margin:0 5px">
               <el-option v-for="item in dw_type" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
-            <el-input v-model="query.ip" clearable size="mini" placeholder="请输入IP地址" style="width: 150px;margin:0 5px" />
           </div>
           <div class="flex-sub">
             <el-button type="primary" size="mini" icon="el-icon-magic-stick" @click="toSearch">查询</el-button>
@@ -30,39 +29,49 @@
             <template slot-scope="scope">
               <div class="table-card-box">
                 <div class="table-card-title">
-                  <span>--端口巡检列表--</span>
+                  <span><i class="el-icon-plus touch" title="点击添加端口" @click="toPortEdit"></i> 端口巡检列表</span>
                 </div>
                 <table v-if="scope.row.portList.length" class="table">
                   <tr class="tr">
-                    <th class="th" width="40%">端口名称</th>
-                    <th class="th" width="40%">对应地址</th>
-                    <th class="th">编码</th>
+                    <th class="th" width="25%">端口名称</th>
+                    <th class="th" width="35%">对应地址</th>
+                    <th class="th" width="10%">通信方式</th>
+                    <th class="th" width="10%">接收端OID</th>
+                    <th class="th" width="10%">发射端OID</th>
+                    <th class="th" width="10%">型号</th>
                   </tr>
                   <tr v-for="(port, ii) in scope.row.portList" :key="'p_'+ii" class="tr">
                     <td>
                       <img :src="require('@/assets/port.png')" style="transform: scaleX(0.8) scaleY(0.8)" />
-                      <span class="touch link-text">{{ port.name }}</span>
+                      <i class="el-icon-edit-outline touch" title="编辑" @click="toPortEdit(port)"></i>
+                      <i class="el-icon-delete touch" title="删除" style="left: 45px" @click="toPortDelete(scope.row, ii)"></i>
+                      <span class="touch link-text" title="编辑" @click="toPortEdit(port)">{{ port.name }}</span>
                     </td>
                     <td>{{ port.address }}</td>
+                    <td>{{ port.code }}</td>
+                    <td>{{ port.code }}</td>
+                    <td>{{ port.code }}</td>
                     <td>{{ port.code }}</td>
                   </tr>
                 </table>
                 <div v-else class="table-card-noData">暂无数据</div>
                 <div class="table-card-title" style="margin-top: 4px">
-                  <span>--电源设备列表--</span>
+                  <span><i class="el-icon-plus touch" title="点击添加电源" @click="toUpsEdit"></i> 电源设备列表</span>
                 </div>
                 <table v-if="scope.row.upsList.length" class="table">
                   <tr class="tr">
-                    <th class="th" width="40%">电源名称</th>
-                    <th class="th" width="40%">电源型号</th>
-                    <th class="th">编码</th>
+                    <th class="th" width="25%">电源名称</th>
+                    <th class="th" width="35%">电源型号</th>
+                    <th class="th">设备OID</th>
                   </tr>
                   <tr v-for="(ups, ii) in scope.row.upsList" :key="'u_'+ii" class="tr">
                     <td>
                       <img :src="require('@/assets/ups.png')" />
-                      <span class="touch link-text">{{ ups.name }}</span>
+                      <i class="el-icon-edit-outline touch" title="编辑" @click="toUpsEdit(ups)"></i>
+                      <i class="el-icon-delete touch" title="删除" style="left: 45px" @click="toUpsDelete(scope.row, ii)"></i>
+                      <span class="touch link-text" title="编辑" @click="toUpsEdit(ups)">{{ ups.name }}</span>
                     </td>
-                    <td>{{ ups.model }}</td>
+                    <td>220V交变电源</td>
                     <td>{{ ups.code }}</td>
                   </tr>
                 </table>
@@ -71,9 +80,8 @@
             </template>
           </el-table-column>
           <el-table-column prop="name" label="交换机名称" sortable />
-          <el-table-column prop="code" label="设备编号" align="center" sortable />
-          <el-table-column prop="dw" label="所属分管单位" align="center" sortable />
           <el-table-column prop="ip" label="IP地址" align="center" sortable />
+          <el-table-column prop="dw" label="所属分管单位" align="center" sortable />
           <el-table-column label="端口数量" align="center" width="100" sortable>
             <template slot-scope="scope">
               {{ scope.row.portList.length || '暂无' }}
@@ -97,13 +105,17 @@
       </div>
     </el-card>
     <edit-page ref="editPage" />
+    <port-edit ref="portEdit" />
+    <ups-edit ref="upsEdit" />
   </div>
 </template>
 
 <script>
 import editPage from './edit'
+import portEdit from './portEdit'
+import upsEdit from './upsEdit'
 export default {
-  components: { editPage },
+  components: { editPage, portEdit, upsEdit },
   data() {
     return {
       waterMark: '',
@@ -111,10 +123,7 @@ export default {
         { label: '市公司', value: '市公司' },
         { label: '环翠分公司', value: '环翠分公司' },
         { label: '高区分公司', value: '高区分公司' },
-        { label: '经区分公司', value: '经区分公司' },
-        { label: '荣成分公司', value: '荣成分公司' },
-        { label: '文登分公司', value: '文登分公司' },
-        { label: '乳山分公司', value: '乳山分公司' }
+        { label: '经区分公司', value: '经区分公司' }
       ],
       loading: false,
       page: 1,
@@ -149,15 +158,8 @@ export default {
           dw: '市公司',
           ip: '10.112.9.214',
           dataTime: '2023-12-21 10:31:58',
-          upsList: [
-            { code: '123' }
-          ],
-          portList: [
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' },
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' },
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' },
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' }
-          ]
+          upsList: [],
+          portList: []
         },
         {
           name: 'IPTV环网-威海7503',
@@ -166,7 +168,7 @@ export default {
           ip: '10.112.9.214',
           dataTime: '2023-12-21 10:31:58',
           upsList: [
-            { code: '123' }
+            { name: 'XGE0/0/25-ups', model: '220V-1A交变', code: '123' }
           ],
           portList: [
             { name: 'XGE0/0/25', code: '123', address: '威海6520' },
@@ -192,14 +194,40 @@ export default {
     toEdit(item) {
       this.$refs.editPage.loadData(item)
     },
+    toPortEdit(item) {
+      this.$refs.portEdit.loadData(item)
+    },
+    toUpsEdit(item) {
+      this.$refs.upsEdit.loadData(item)
+    },
     toDelete(item) {
-      this.$confirm(`确认删除 ${item.name} 交换机吗?`, '提示', {
+      this.$confirm(`确认删除”${item.name}“交换机吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.$successMsg('数据删除成功!')
         this.loadData()
+      })
+    },
+    toPortDelete(item, index) {
+      this.$confirm(`确认删除“${item.name}”交换机“${item.portList[index].name}”端口吗?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        item.portList.splice(index, 1)
+        this.$successMsg('行数据删除成功!')
+      })
+    },
+    toUpsDelete(item, index) {
+      this.$confirm(`确认删除”${item.name}”交换机“${item.upsList[index].name}”电源吗?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        item.upsList.splice(index, 1)
+        this.$successMsg('行数据删除成功!')
       })
     },
     toSearch() {
@@ -230,7 +258,7 @@ export default {
 .table-card-box {
   .table-card-title {
     width: 100%;
-    padding: 2px 20px;
+    padding: 2px 10px;
     color: #333333;
     font-weight: bold;
     font-size: 14px;
@@ -239,6 +267,12 @@ export default {
     span {
       font-size: 15px;
       padding-left: 4px;
+    }
+    i {
+      float: left;
+    }
+    i:hover {
+      color: #3a8ee6;
     }
   }
   .table-card-noData {
@@ -262,7 +296,15 @@ export default {
     img {
       position: absolute;
       top: 4px;
-      left: 20px;
+      left: 10px;
+    }
+    i {
+      position: absolute;
+      top: 6px;
+      left: 30px;
+    }
+    i:hover {
+      color: #3a8ee6;
     }
   }
   th {

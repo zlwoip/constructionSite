@@ -63,10 +63,7 @@ export default {
         { label: '市公司', value: '市公司' },
         { label: '环翠分公司', value: '环翠分公司' },
         { label: '高区分公司', value: '高区分公司' },
-        { label: '经区分公司', value: '经区分公司' },
-        { label: '荣成分公司', value: '荣成分公司' },
-        { label: '文登分公司', value: '文登分公司' },
-        { label: '乳山分公司', value: '乳山分公司' }
+        { label: '经区分公司', value: '经区分公司' }
       ],
       dj_type: [
         { label: '总前端120KVA', value: '总前端120KVA' },
@@ -108,7 +105,7 @@ export default {
       this.$refs.editPage.loadData(item)
     },
     toDelete(item) {
-      this.$confirm(`确认删除 ${item.upsName} 电源设备吗?`, '提示', {
+      this.$confirm(`确认删除“${item.upsName}”电源设备吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
