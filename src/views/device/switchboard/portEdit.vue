@@ -2,36 +2,34 @@
   <!-- 表单渲染 -->
   <el-dialog append-to-body :close-on-click-modal="false" :before-close="cancelView" :visible="visible" :title="title" width="580px">
     <el-form ref="formViewRef" :model="formData" :rules="rules" :status-icon="true" label-width="220px">
-      <el-form-item label="端口名称：" class="form-cell" prop="name">
+      <el-form-item label="交换机：" class="form-cell" prop="switchName">
         <div class="cell-box">
-          <el-input v-model="formData.name" size="mini" placeholder="单行文本输入" class="cell-input" />
+          <el-input v-model="formData.switchName" size="mini" disabled class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="对应地址：" class="form-cell" prop="code">
+      <el-form-item label="交换机IP：" class="form-cell" prop="switchIP">
         <div class="cell-box">
-          <el-input v-model="formData.address" size="mini" placeholder="单行文本输入" class="cell-input" />
+          <el-input v-model="formData.switchIP" size="mini" disabled class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="通信方式：" class="form-cell" prop="dw">
+      <el-form-item label="端口名称：" class="form-cell" prop="portName">
         <div class="cell-box">
-          <el-select v-model="formData.code" size="mini" placeholder="请选择通信方式" class="cell-select">
-            <el-option v-for="item in dw_type" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+          <el-input v-model="formData.portName" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="接收端OID：" class="form-cell" prop="ip">
+      <el-form-item label="对应地址：" class="form-cell" prop="portDescription">
         <div class="cell-box">
-          <el-input v-model="formData.code" size="mini" placeholder="单行文本输入" class="cell-input" />
+          <el-input v-model="formData.portDescription" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="发射端OID：" class="form-cell" prop="ip">
+      <el-form-item label="接收端OID：" class="form-cell" prop="receiveOpticalOid">
         <div class="cell-box">
-          <el-input v-model="formData.code" size="mini" placeholder="单行文本输入" class="cell-input" />
+          <el-input v-model="formData.receiveOpticalOid" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="型号：" class="form-cell" prop="ip">
+      <el-form-item label="发射端OID：" class="form-cell" prop="outputOpticalOid">
         <div class="cell-box">
-          <el-input v-model="formData.code" size="mini" placeholder="单行文本输入" class="cell-input" />
+          <el-input v-model="formData.outputOpticalOid" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
     </el-form>
@@ -55,10 +53,14 @@ export default {
       ],
       title: '',
       formData: {
-        name: '',
-        address: '',
-        code: ''
+        switchName: '',
+        portName: '',
+        portDescription: '',
+        receiveOpticalOid: '',
+        outputOpticalOid: '',
+        switchIP: ''
       },
+      switchObj: {},
       rules: {
         name: { required: true, message: '请填写电源名称', trigger: 'blur' }
       }
@@ -77,10 +79,36 @@ export default {
     cancelView() {
       this.hideView()
     },
+    updataSwitchAndCancelView() {
+      this.$post({
+        url: this.$urlPath.ShowSwitchDeviceList
+      }).then((res) => {
+        const tempList = res.switchDeviceList || []
+        for (let i = 0; i < tempList.length; i++) {
+          if (tempList[i].switchId === this.switchObj.switchId) {
+            this.switchObj.switchPortList = tempList[i].switchPortList
+            this.cancelView()
+            break
+          }
+        }
+      }).catch((error) => {
+        this.$errorMsg(error || '接口调用失败，未知异常')
+      })
+    },
     submitForm(isRelease) {
       this.$refs.formViewRef.validate((valid, obj) => {
         if (valid) {
-          this.cancelView()
+          this.$post({
+            url: this.formData.portId ? this.$urlPath.updateSwitchPort : this.$urlPath.addSwitchPort,
+            data: {
+              ...this.formData
+            }
+          }).then((res) => {
+            this.$successMsg(res.msg)
+            this.updataSwitchAndCancelView()
+          }).catch((error) => {
+            this.$errorMsg(error || '接口调用失败，未知异常')
+          })
         } else {
           this.$message({
             message: '表单信息有误，请核对无误后提交！',
@@ -89,18 +117,22 @@ export default {
         }
       })
     },
-    loadData(item) {
+    loadData(item, switchObj) {
       if (item) {
         this.formData = item
-        this.title = '新增端口'
+        this.title = '编辑端口'
       } else {
         this.formData = {
-          name: '',
-          address: '',
-          code: ''
+          portName: '',
+          portDescription: '',
+          receiveOpticalOid: '',
+          outputOpticalOid: ''
         }
-        this.title = '编辑端口'
+        this.title = '新增端口'
       }
+      this.switchObj = switchObj
+      this.formData.switchName = switchObj.switchName
+      this.formData.switchIP = switchObj.switchIP
       this.showView()
     }
   }
@@ -108,6 +140,30 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+::v-deep.el-input__inner {
+  border: 1px solid rgba(100, 100, 100, 0.1);
+  border-bottom: 1px solid rgba(100, 100, 100, 0.2);
+  border-radius: 5px;
+}
+::v-deep.el-input.is-disabled .el-input__inner {
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(100, 100, 100, 0.4);
+  background: white;
+  color: #a3a3a3;
+  font-style: oblique;
+  font-size: 14px;
+  cursor: text;
+}
+::v-deep.el-input.is-disabled .el-input__icon {
+  cursor: text;
+}
+::v-deep.el-icon-circle-check {
+  color: #13ce66;
+}
+::v-deep.el-icon-arrow-up:before {
+  content: '';
+}
 .cell-box {
   min-width: 120px;
   .cell-input {
@@ -115,27 +171,6 @@ export default {
   }
   .cell-select {
     width: 220px;
-  }
-  >>>.el-input__inner {
-    border: 1px solid rgba(100, 100, 100, 0.1);
-    border-bottom: 1px solid rgba(100, 100, 100, 0.2);
-    border-radius: 5px;
-  }
-  >>>.el-input.is-disabled .el-input__inner {
-    border-radius: 0;
-    border: 0;
-    border-bottom: 1px solid rgba(100, 100, 100, 0.4);
-    background: white;
-    cursor: text;
-  }
-  >>>.el-input.is-disabled .el-input__icon {
-    cursor: text;
-  }
-  >>>.el-icon-circle-check {
-    color: #13ce66;
-  }
-  >>>.el-icon-arrow-up:before {
-    content: '';
   }
 }
 </style>

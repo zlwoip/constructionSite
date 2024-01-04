@@ -5,11 +5,12 @@
         <div class="wrapper">
           <div class="left-wrapper">
             <span class="label">数据检索条件:</span>
-            <el-input v-model="query.name" clearable size="mini" placeholder="请输入交换机名称" style="width: 150px;margin:0 5px" />
-            <el-input v-model="query.ip" clearable size="mini" placeholder="请输入IP地址" style="width: 150px;margin:0 5px" />
-            <el-select v-model="query.dw" clearable size="mini" placeholder="请选择所属分管单位" style="width: 160px;margin:0 5px">
+            <el-input v-model="query.switchName" clearable size="mini" placeholder="请输入交换机名称" style="width: 150px;margin:0 5px" />
+            <el-input v-model="query.switchIP" clearable size="mini" placeholder="请输入IP地址" style="width: 150px;margin:0 5px" />
+            <el-select v-model="query.branch" clearable size="mini" placeholder="请选择所属分管单位" style="width: 160px;margin:0 5px">
               <el-option v-for="item in dw_type" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
+            <el-input v-model="query.comm" clearable size="mini" placeholder="请输入通信编码" style="width: 150px;margin:0 5px" />
           </div>
           <div class="flex-sub">
             <el-button type="primary" size="mini" icon="el-icon-magic-stick" @click="toSearch">查询</el-button>
@@ -23,76 +24,77 @@
     </div>
     <el-card :body-style="{padding: 0}" class="table-container" shadow="never">
       <div class="wrapper" style="overflow: hidden">
-        <el-table v-loading="loading" :data="tableData" size="mini" stripe tooltip-effect="dark" height="calc(70vh - 42px)">
+        <el-table v-loading="loading" :data="tableList" size="mini" stripe tooltip-effect="dark" height="calc(70vh - 42px)">
           <el-table-column type="index" width="60" label="序号" align="center" :index="indexMethod" />
           <el-table-column align="center" type="expand">
             <template slot-scope="scope">
               <div class="table-card-box">
                 <div class="table-card-title">
-                  <span><i class="el-icon-plus touch" title="点击添加端口" @click="toPortEdit"></i> 端口巡检列表</span>
+                  <span><i class="el-icon-plus touch" title="点击添加端口" @click="toPortEdit(null, scope.row)"></i> 端口巡检列表</span>
                 </div>
-                <table v-if="scope.row.portList.length" class="table">
+                <table v-if="scope.row.switchPortList.length" class="table">
                   <tr class="tr">
                     <th class="th" width="25%">端口名称</th>
-                    <th class="th" width="35%">对应地址</th>
-                    <th class="th" width="10%">通信方式</th>
-                    <th class="th" width="10%">接收端OID</th>
-                    <th class="th" width="10%">发射端OID</th>
-                    <th class="th" width="10%">型号</th>
+                    <th class="th" width="25%">对应地址</th>
+                    <th class="th" width="25%">接收端OID</th>
+                    <th class="th" width="25%">发射端OID</th>
                   </tr>
-                  <tr v-for="(port, ii) in scope.row.portList" :key="'p_'+ii" class="tr">
+                  <tr v-for="(port, ii) in scope.row.switchPortList" :key="'p_'+ii" class="tr">
                     <td>
                       <img :src="require('@/assets/port.png')" style="transform: scaleX(0.8) scaleY(0.8)" />
-                      <i class="el-icon-edit-outline touch" title="编辑" @click="toPortEdit(port)"></i>
+                      <i class="el-icon-edit-outline touch" title="编辑" @click="toPortEdit(port, scope.row)"></i>
                       <i class="el-icon-delete touch" title="删除" style="left: 45px" @click="toPortDelete(scope.row, ii)"></i>
-                      <span class="touch link-text" title="编辑" @click="toPortEdit(port)">{{ port.name }}</span>
+                      <span class="touch link-text" title="编辑" @click="toPortEdit(port, scope.row)">
+                        {{ port.portName }}
+                      </span>
                     </td>
-                    <td>{{ port.address }}</td>
-                    <td>{{ port.code }}</td>
-                    <td>{{ port.code }}</td>
-                    <td>{{ port.code }}</td>
-                    <td>{{ port.code }}</td>
+                    <td>{{ port.portDescription }}</td>
+                    <td>{{ port.receiveOpticalOid }}</td>
+                    <td>{{ port.outputOpticalOid }}</td>
                   </tr>
                 </table>
                 <div v-else class="table-card-noData">暂无数据</div>
                 <div class="table-card-title" style="margin-top: 4px">
-                  <span><i class="el-icon-plus touch" title="点击添加电源" @click="toUpsEdit"></i> 电源设备列表</span>
+                  <span><i class="el-icon-plus touch" title="点击添加电源" @click="toUpsEdit(null, scope.row)"></i> 电源设备列表</span>
                 </div>
-                <table v-if="scope.row.upsList.length" class="table">
+                <table v-if="scope.row.switchPowerList.length" class="table">
                   <tr class="tr">
                     <th class="th" width="25%">电源名称</th>
-                    <th class="th" width="35%">电源型号</th>
-                    <th class="th">设备OID</th>
+                    <th class="th" width="25%">电源型号</th>
+                    <th class="th" width="50%">设备OID</th>
                   </tr>
-                  <tr v-for="(ups, ii) in scope.row.upsList" :key="'u_'+ii" class="tr">
+                  <tr v-for="(ups, ii) in scope.row.switchPowerList" :key="'u_'+ii" class="tr">
                     <td>
                       <img :src="require('@/assets/ups.png')" />
-                      <i class="el-icon-edit-outline touch" title="编辑" @click="toUpsEdit(ups)"></i>
+                      <i class="el-icon-edit-outline touch" title="编辑" @click="toUpsEdit(ups, scope.row)"></i>
                       <i class="el-icon-delete touch" title="删除" style="left: 45px" @click="toUpsDelete(scope.row, ii)"></i>
-                      <span class="touch link-text" title="编辑" @click="toUpsEdit(ups)">{{ ups.name }}</span>
+                      <span class="touch link-text" title="编辑" @click="toUpsEdit(ups, scope.row)">
+                        {{ ups.power }}
+                      </span>
                     </td>
                     <td>220V交变电源</td>
-                    <td>{{ ups.code }}</td>
+                    <td>{{ ups.powerOid }}</td>
                   </tr>
                 </table>
                 <div v-else class="table-card-noData">暂无数据</div>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="交换机名称" sortable />
-          <el-table-column prop="ip" label="IP地址" align="center" sortable />
-          <el-table-column prop="dw" label="所属分管单位" align="center" sortable />
+          <el-table-column prop="switchName" label="交换机名称" sortable width="220" />
+          <el-table-column prop="switchIP" label="IP地址" align="center" sortable />
+          <el-table-column prop="branch" label="所属分管单位" align="center" sortable />
+          <el-table-column prop="comm" label="通信编码" align="center" sortable />
+          <el-table-column prop="version" label="通信编码" align="center" sortable />
           <el-table-column label="端口数量" align="center" width="100" sortable>
             <template slot-scope="scope">
-              {{ scope.row.portList.length || '暂无' }}
+              {{ scope.row.switchPortList.length || '暂无' }}
             </template>
           </el-table-column>
           <el-table-column label="电源数量" align="center" width="100" sortable>
             <template slot-scope="scope">
-              {{ scope.row.upsList.length || '暂无' }}
+              {{ scope.row.switchPowerList.length || '暂无' }}
             </template>
           </el-table-column>
-          <el-table-column prop="dataTime" label="最后维护日期" align="center" width="150" sortable />
           <el-table-column label="操作" align="center" width="120">
             <template slot-scope="scope">
               <el-tooltip content="编辑"><el-button round plain type="primary" size="mini" icon="el-icon-edit-outline" @click="toEdit(scope.row)" /></el-tooltip>
@@ -114,6 +116,7 @@
 import editPage from './edit'
 import portEdit from './portEdit'
 import upsEdit from './upsEdit'
+
 export default {
   components: { editPage, portEdit, upsEdit },
   data() {
@@ -123,65 +126,28 @@ export default {
         { label: '市公司', value: '市公司' },
         { label: '环翠分公司', value: '环翠分公司' },
         { label: '高区分公司', value: '高区分公司' },
-        { label: '经区分公司', value: '经区分公司' }
+        { label: '经区分公司', value: '经区分公司' },
+        { label: '文登分公司', value: '文登分公司' },
+        { label: '荣成分公司', value: '荣成分公司' },
+        { label: '乳山分公司', value: '乳山分公司' }
       ],
       loading: false,
       page: 1,
       pageSize: 20,
       total: 0,
       query: {
-        name: '',
-        code: '',
-        dw: '',
-        ip: ''
+        switchName: '',
+        switchIP: '',
+        branch: '',
+        comm: ''
       },
-      tableData: [
-        {
-          name: 'IPTV环网-威海7503',
-          code: '123456',
-          dw: '市公司',
-          ip: '10.112.9.214',
-          dataTime: '2023-12-21 10:31:58',
-          upsList: [
-            { name: 'XGE0/0/25-ups', model: '220V-1A交变', code: '123' }
-          ],
-          portList: [
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' },
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' },
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' },
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' }
-          ]
-        },
-        {
-          name: 'IPTV环网-威海7503',
-          code: '123456',
-          dw: '市公司',
-          ip: '10.112.9.214',
-          dataTime: '2023-12-21 10:31:58',
-          upsList: [],
-          portList: []
-        },
-        {
-          name: 'IPTV环网-威海7503',
-          code: '123456',
-          dw: '市公司',
-          ip: '10.112.9.214',
-          dataTime: '2023-12-21 10:31:58',
-          upsList: [
-            { name: 'XGE0/0/25-ups', model: '220V-1A交变', code: '123' }
-          ],
-          portList: [
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' },
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' },
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' },
-            { name: 'XGE0/0/25', code: '123', address: '威海6520' }
-          ]
-        }
-      ]
+      tableData: [],
+      tableList: []
     }
   },
   mounted() {
     this.$nextTick(() => {
+      this.loadData()
     })
   },
   methods: {
@@ -194,40 +160,67 @@ export default {
     toEdit(item) {
       this.$refs.editPage.loadData(item)
     },
-    toPortEdit(item) {
-      this.$refs.portEdit.loadData(item)
+    toPortEdit(item, switchObj) {
+      this.$refs.portEdit.loadData(item, switchObj)
     },
-    toUpsEdit(item) {
-      this.$refs.upsEdit.loadData(item)
+    toUpsEdit(ups, switchObj) {
+      this.$refs.upsEdit.loadData(ups, switchObj)
     },
     toDelete(item) {
-      this.$confirm(`确认删除”${item.name}“交换机吗?`, '提示', {
+      this.$confirm(`确认删除”${item.switchName}“交换机吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$successMsg('数据删除成功!')
-        this.loadData()
+        this.$post({
+          url: this.$urlPath.deleteSwitchDevice,
+          data: {
+            switchId: item.switchId
+          }
+        }).then((res) => {
+          this.$successMsg(res.msg)
+          this.loadData()
+        }).catch((error) => {
+          this.$errorMsg(error || '接口调用失败，未知异常')
+        })
       })
     },
     toPortDelete(item, index) {
-      this.$confirm(`确认删除“${item.name}”交换机“${item.portList[index].name}”端口吗?`, '提示', {
+      this.$confirm(`确认删除“${item.switchName}”交换机“${item.switchPortList[index].portName}”端口吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        item.portList.splice(index, 1)
-        this.$successMsg('行数据删除成功!')
+        this.$post({
+          url: this.$urlPath.deleteSwitchPort,
+          data: {
+            portId: item.switchPortList[index].portId
+          }
+        }).then((res) => {
+          this.$successMsg(res.msg)
+          item.switchPortList.splice(index, 1)
+        }).catch((error) => {
+          this.$errorMsg(error || '接口调用失败，未知异常')
+        })
       })
     },
     toUpsDelete(item, index) {
-      this.$confirm(`确认删除”${item.name}”交换机“${item.upsList[index].name}”电源吗?`, '提示', {
+      this.$confirm(`确认删除”${item.switchName}”交换机“${item.switchPowerList[index].power}”电源吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        item.upsList.splice(index, 1)
-        this.$successMsg('行数据删除成功!')
+        this.$post({
+          url: this.$urlPath.deleteSwitchPower,
+          data: {
+            powerId: item.switchPowerList[index].powerId
+          }
+        }).then((res) => {
+          this.$successMsg(res.msg)
+          item.switchPowerList.splice(index, 1)
+        }).catch((error) => {
+          this.$errorMsg(error || '接口调用失败，未知异常')
+        })
       })
     },
     toSearch() {
@@ -247,8 +240,45 @@ export default {
       this.pageSize = e
       this.loadData()
     },
+    dataFilter() {
+      if (this.query.switchName) {
+        this.tableData = this.tableData.filter(item => {
+          return item.switchName.indexOf(this.query.switchName) >= 0
+        })
+      }
+      if (this.query.switchIP) {
+        this.tableData = this.tableData.filter(item => {
+          return item.switchIP.indexOf(this.query.switchIP) >= 0
+        })
+      }
+      if (this.query.branch) {
+        this.tableData = this.tableData.filter(item => {
+          return item.branch.indexOf(this.query.branch) >= 0
+        })
+      }
+      if (this.query.comm) {
+        this.tableData = this.tableData.filter(item => {
+          return item.comm.indexOf(this.query.comm) >= 0
+        })
+      }
+      this.total = this.tableData.length
+      this.tableList = this.tableData.slice((this.page - 1) * this.pageSize, this.page * this.pageSize)
+    },
     loadData() {
-
+      this.tableList = []
+      this.$post({
+        url: this.$urlPath.ShowSwitchDeviceList,
+        data: {
+          page: this.page,
+          pageSize: this.pageSize,
+          ...this.query
+        }
+      }).then((res) => {
+        this.tableData = res.switchDeviceList || []
+        this.dataFilter()
+      }).catch((error) => {
+        this.$errorMsg(error || '接口调用失败，未知异常')
+      })
     }
   }
 }

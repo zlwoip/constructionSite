@@ -2,20 +2,32 @@
   <!-- 表单渲染 -->
   <el-dialog append-to-body :close-on-click-modal="false" :before-close="cancelView" :visible="visible" :title="title" width="580px">
     <el-form ref="formViewRef" :model="formData" :rules="rules" :status-icon="true" label-width="220px">
-      <el-form-item label="交换机名称：" class="form-cell" prop="name">
+      <el-form-item label="交换机名称：" class="form-cell" prop="switchName">
         <div class="cell-box">
-          <el-input v-model="formData.name" size="mini" placeholder="单行文本输入" class="cell-input" />
+          <el-input v-model="formData.switchName" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="IP地址：" class="form-cell" prop="ip">
+      <el-form-item label="IP地址：" class="form-cell" prop="switchIP">
         <div class="cell-box">
-          <el-input v-model="formData.ip" size="mini" placeholder="单行文本输入" class="cell-input" />
+          <el-input v-model="formData.switchIP" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="所属分管单位：" class="form-cell" prop="dw">
+      <el-form-item label="所属分管单位：" class="form-cell" prop="branch">
         <div class="cell-box">
-          <el-select v-model="formData.dw" size="mini" placeholder="请选择所属分管单位" class="cell-select">
+          <el-select v-model="formData.branch" size="mini" placeholder="请选择所属分管单位" class="cell-select">
             <el-option v-for="item in dw_type" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </div>
+      </el-form-item>
+      <el-form-item label="通信编码：" class="form-cell" prop="comm">
+        <div class="cell-box">
+          <el-input v-model="formData.comm" size="mini" placeholder="单行文本输入" class="cell-input" />
+        </div>
+      </el-form-item>
+      <el-form-item label="协议版本：" class="form-cell" prop="version">
+        <div class="cell-box">
+          <el-select v-model="formData.version" size="mini" placeholder="请选择所属分管单位" class="cell-select">
+            <el-option v-for="item in ver_type" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </div>
       </el-form-item>
@@ -36,21 +48,28 @@ export default {
         { label: '市公司', value: '市公司' },
         { label: '环翠分公司', value: '环翠分公司' },
         { label: '高区分公司', value: '高区分公司' },
-        { label: '经区分公司', value: '经区分公司' }
+        { label: '经区分公司', value: '经区分公司' },
+        { label: '文登分公司', value: '文登分公司' },
+        { label: '荣成分公司', value: '荣成分公司' },
+        { label: '乳山分公司', value: '乳山分公司' }
+      ],
+     ver_type: [
+        { label: 'Ver1', value: 'Ver1' },
+        { label: 'Ver2', value: 'Ver2' }
       ],
       title: '',
       formData: {
-        name: '',
-        code: '',
-        dw: '',
-        ip: '',
-        upsList: [],
-        portList: []
+        switchName: '',
+        switchIP: '',
+        branch: '',
+        comm: 'public',
+        version: 'Ver1'
       },
       rules: {
-        name: { required: true, message: '请填写电源名称', trigger: 'blur' },
-        dw: { required: true, message: '请选择所属分管单位', trigger: 'blur' },
-        ip: { required: true, message: '请填写ip地址', trigger: 'blur' }
+        switchName: { required: true, message: '请填写交换机名称', trigger: 'blur' },
+        switchIP: { required: true, message: '请填写交换机IP', trigger: 'blur' },
+        branch: { required: true, message: '请选择所属分管单位', trigger: 'blur' },
+        comm: { required: true, message: '请选择交换机通信编码', trigger: 'blur' }
       }
     }
   },
@@ -70,7 +89,18 @@ export default {
     submitForm(isRelease) {
       this.$refs.formViewRef.validate((valid, obj) => {
         if (valid) {
-          this.cancelView()
+          this.$post({
+            url: this.formData.switchId ? this.$urlPath.updateSwitchDevice : this.$urlPath.addSwitchDevice,
+            data: {
+              ...this.formData
+            }
+          }).then((res) => {
+            this.$successMsg(res.msg)
+            this.cancelView()
+            this.$parent.loadData()
+          }).catch((error) => {
+            this.$errorMsg(error || '接口调用失败，未知异常')
+          })
         } else {
           this.$message({
             message: '表单信息有误，请核对无误后提交！',
@@ -85,10 +115,11 @@ export default {
         this.title = '交换机信息编辑'
       } else {
         this.formData = {
-          name: '',
-          code: '',
-          dw: '',
-          ip: ''
+          switchName: '',
+          switchIP: '',
+          branch: '',
+          comm: 'public',
+          version: 'Ver1'
         }
         this.title = '交换机信息录入'
       }

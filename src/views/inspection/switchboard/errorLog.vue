@@ -11,8 +11,8 @@
   >
     <div v-for="(iptv, i) in tableList" :key="'iptv_'+i" class="table-card-box" style="margin-bottom: 16px">
       <div class="table-card-title">
-        <span>{{ iptv.name }}</span>
-        <span style="float: right;color: #999999;font-size: 14px">IP: {{ iptv.ip }} </span>
+        <span>{{ iptv.switchName }}</span>
+        <span style="float: right;color: #999999;font-size: 14px">IP: {{ iptv.switchIP }} </span>
       </div>
       <div style="padding-top:8px">
         <table class="table">
@@ -22,11 +22,11 @@
             <th class="th">光接收功率</th>
             <th class="th">光发射功率</th>
           </tr>
-          <tr v-for="(port, ii) in iptv.portList" :key="'p_'+i+'_'+ii" class="tr">
-            <td>{{ port.port }}</td>
-            <td>{{ port.address }}</td>
-            <td :class="port.input>-3.5?'warn':''">{{ port.input }}</td>
-            <td :class="port.output>-1.69?'warn':''">{{ port.output }}</td>
+          <tr v-for="(port, ii) in iptv.switchPortList" :key="'p_'+i+'_'+ii" class="tr">
+            <td>{{ port.portName }}</td>
+            <td>{{ port.portDescription }}</td>
+            <td><span :style="{color:port.vr?'#f00':''}" :title="port.vr?'光功率数据异常':''">{{ port.receiveOptical }}</span></td>
+            <td :style="{color:port.vo?'#f00':''}" :title="port.vo?'光功率数据异常':''">{{ port.outputOptical }}</td>
           </tr>
         </table>
       </div>
@@ -43,27 +43,7 @@ export default {
     return {
       visible: false,
       title: '',
-      tableList: [
-        {
-          name: 'IPTV环网-威海7503',
-          ip: '10.253.174.240',
-          ups: '电源正常',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE0/0/25', address: '威海6520', input: -2.99, output: -0.97 },
-            { port: 'XGE2/0/1', address: '乳山6520', input: -5.19, output: -1.66 }
-          ]
-        },
-        {
-          name: 'IPTV环网-文登6520',
-          ip: '10.253.174.225',
-          ups: '暂不支持',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE1/0/24', address: '文登7604', input: -3.47, output: -1.78 }
-          ]
-        }
-      ],
+      tableList: [],
       dataObj: {}
     }
   },
@@ -81,6 +61,12 @@ export default {
     },
     loadData(obj) {
       this.title = `交换机异常巡检日志 - ${obj.dateTime}`
+      this.tableList = JSON.parse(JSON.stringify(obj.tableList))
+      this.tableList.forEach(iptv => {
+        iptv.switchPortList.filter(pObj => {
+          return pObj.vr || pObj.vo
+        })
+      })
       this.showView()
     }
   }

@@ -5,9 +5,9 @@
         <div class="wrapper" :style="{background:waterMark?`url(${waterMark.toDataURL('image/png')}) left top repeat`:``}">
           <div class="left-wrapper">
             <span class="label">数据检索条件:</span>
-            <el-input v-model="query.ip" clearable size="mini" placeholder="请输入交换机IP" style="width: 180px;margin:0 5px" />
-            <el-input v-model="query.port" clearable size="mini" placeholder="请输入交换机端口" style="width: 180px;margin:0 5px" />
-            <el-input v-model="query.address" clearable size="mini" placeholder="请输入端口对应地址" style="width: 180px;margin:0 5px" />
+            <el-input v-model="query.switchIP" clearable size="mini" placeholder="请输入交换机IP" style="width: 180px;margin:0 5px" />
+            <el-input v-model="query.portName" clearable size="mini" placeholder="请输入交换机端口" style="width: 180px;margin:0 5px" />
+            <el-input v-model="query.portDescription" clearable size="mini" placeholder="请输入端口对应地址" style="width: 180px;margin:0 5px" />
           </div>
           <div class="flex-sub">
             <el-button type="primary" size="mini" icon="el-icon-magic-stick" @click="search">过滤</el-button>
@@ -25,20 +25,34 @@
         <div class="table-card-box">
           <div class="table-card-title">
             <el-row>
-              <el-col :span="20" style="padding-left: 18px">
-                本次巡检共检测到<span style="color:#191970;"> 126 </span>个交换机终端，端口数据<span style="color:#0000CD;"> 428 </span>条，有效数据<span style="color:#008B00;"> 413 </span>条，异常数据<span :class="errorNum?'underline touch':'underline'" :title="errorNum?'点击查看异常清单':''" :style="{color: errorNum?'red':'#00CD66'}" @click="openErrorLog()"> {{ errorNum }} </span>条
+              <el-col v-if="!loading" :span="20" style="padding-left: 18px">
+                本次巡检共检测到<span style="color:#0000CD;"> {{ deviceNum }} </span>个交换机终端，监听到<span style="color:#008B00;"> {{ dataNum }} </span>个端口，异常端口<span :class="errorNum?'underline touch':'underline'" :title="errorNum?'点击查看异常清单':''" :style="{color: errorNum?'red':'#00CD66'}" @click="openErrorLog()"> {{ errorNum }} </span>个
               </el-col>
-              <el-col :span="4" style="text-align: right">
+              <el-col v-if="!loading" :span="4" style="text-align: right">
                 <span style="padding-right:18px; font-size: 16px;color: #666">{{ dateTime }}</span>
+              </el-col>
+              <el-col v-else :span="24" style="padding-left: 18px;text-align: center">
+                <span v-if="dateTime"> <i class="el-icon-loading"></i> 正在巡检中，请稍后...</span>
+                <span v-else> <i class="el-icon-info"></i> 请点击“拉取数据”按钮开始巡检</span>
               </el-col>
             </el-row>
           </div>
           <div v-for="(iptv, i) in tableList" :key="'iptv_'+i" class="box-card">
             <div class="line-title">
               <div class="title-point"><img :src="require('@/assets/Routers.png')" /></div>
-              <span class="title-lable">{{ iptv.name }}</span>
-              <span class="title-ip"><img :src="require('@/assets/IP.png')" /> {{ iptv.ip }} </span>
-              <span class="title-ups" :style="{color:iptv.ups==='电源正常'?'#00CD66':(iptv.ups==='电源异常'?'#f00':'')}"><img :src="require('@/assets/ups.png')" /> {{ iptv.ups }} </span>
+              <span class="title-lable">{{ iptv.switchName }}</span>
+              <span class="title-ip"><img :src="require('@/assets/IP.png')" /> {{ iptv.switchIP }} </span>
+              <span class="title-ups" :style="{color:iptv.upsStu==='电源正常'?'#00CD66':(iptv.upsStu==='电源异常'?'#f00':'')}">
+                <div v-if="iptv.upsStu==='电源正常'" class="link-loading"></div>
+                <img :src="require('@/assets/ups.png')" />
+                <el-popover placement="bottom" width="280" trigger="hover">
+                  <el-table :data="iptv.switchPowerList||[]" size="mini" border stripe tooltip-effect="dark" width="100%">
+                    <el-table-column width="180" property="power" label="电源名称" />
+                    <el-table-column property="powerState" label="电源状态" align="center" :formatter="(row, col, val)=>{return val===1?`正常`:`异常`}" />
+                  </el-table>
+                  <span slot="reference"> {{ iptv.upsStu||'暂无' }} </span>
+                </el-popover>
+              </span>
               <div class="title-line"></div>
             </div>
             <div style="padding-top:10px">
@@ -49,14 +63,16 @@
                   <th class="th">光接收功率<img :src="require('@/assets/wave.png')" /></th>
                   <th class="th">光发射功率<img :src="require('@/assets/wave.png')" /></th>
                 </tr>
-                <tr v-for="(port, ii) in iptv.portList" :key="'p_'+i+'_'+ii" class="tr">
+                <tr v-for="(port, ii) in iptv.switchPortList" :key="'p_'+i+'_'+ii" class="tr">
                   <td>
                     <span class="color-dot" :style="{backgroundColor:colorScheme[ii]}"></span>
-                    <span class="touch link-text" title="点击查看历史曲线" @click="toHistory(iptv,port)">{{ port.port }}</span>
+                    <span class="touch link-text" title="点击查看历史曲线" @click="toHistory(iptv,port)">
+                      {{ port.portName }}
+                    </span>
                   </td>
-                  <td>{{ port.address }}</td>
-                  <td>{{ port.input }}</td>
-                  <td>{{ port.output }}</td>
+                  <td>{{ port.portDescription }}</td>
+                  <td><span :style="{color:port.vr?'#f00':''}" :title="port.vr?'光功率数据异常':''">{{ port.receiveOptical }}</span></td>
+                  <td :style="{color:port.vo?'#f00':''}" :title="port.vo?'光功率数据异常':''">{{ port.outputOptical }}</td>
                 </tr>
               </table>
             </div>
@@ -83,6 +99,8 @@ import * as echarts from 'echarts'
 import errorLog from './errorLog'
 import settingPage from './setting'
 import historyPage from './history'
+import { mapGetters } from 'vuex'
+
 export default {
   components: { errorLog, settingPage, historyPage },
   data() {
@@ -110,170 +128,30 @@ export default {
         '#8378EA'
       ],
       waterMark: '',
+      loading: true,
       dateTime: '',
-      errorNum: 3,
+      deviceNum: 0,
+      dataNum: 0,
+      errorNum: 0,
       query: {
-        ip: '',
-        port: '',
-        address: ''
+        switchIP: '',
+        portName: '',
+        portDescription: ''
       },
-      dataList: [
-        {
-          name: 'IPTV环网-威海7503',
-          ip: '10.253.174.240',
-          ups: '电源正常',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE0/0/25', address: '威海6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/25', address: '威海6520', input: -5.19, output: -1.78 },
-            { port: 'GE0/0/3', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'GE0/0/1', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'XGE2/0/2', address: '文登6520', input: -5.19, output: -1.78 },
-            { port: 'XGE2/0/1', address: '乳山6520', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-文登6520',
-          ip: '10.253.174.225',
-          ups: '暂不支持',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE1/0/6', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/22', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/21', address: '乳山6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/23', address: '文登7604', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/24', address: '文登7604', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-荣成6520',
-          ip: '10.253.174.193',
-          ups: '电源异常',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE1/0/1', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/9', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/22', address: '文登6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/23', address: '荣成7604', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/24', address: '荣成7604', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-威海7503',
-          ip: '10.253.174.240',
-          ups: '电源正常',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE0/0/25', address: '威海6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/25', address: '威海6520', input: -5.19, output: -1.78 },
-            { port: 'GE0/0/3', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'GE0/0/1', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'XGE2/0/2', address: '文登6520', input: -5.19, output: -1.78 },
-            { port: 'XGE2/0/1', address: '乳山6520', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-文登6520',
-          ip: '10.253.174.225',
-          ups: '暂不支持',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE1/0/6', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/22', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/21', address: '乳山6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/23', address: '文登7604', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/24', address: '文登7604', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-威海7503',
-          ip: '10.253.174.240',
-          ups: '电源正常',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE0/0/25', address: '威海6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/25', address: '威海6520', input: -5.19, output: -1.78 },
-            { port: 'GE0/0/3', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'GE0/0/1', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'XGE2/0/2', address: '文登6520', input: -5.19, output: -1.78 },
-            { port: 'XGE2/0/1', address: '乳山6520', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-文登6520',
-          ip: '10.253.174.225',
-          ups: '暂不支持',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE1/0/6', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/22', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/21', address: '乳山6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/23', address: '文登7604', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/24', address: '文登7604', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-荣成6520',
-          ip: '10.253.174.193',
-          ups: '电源异常',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE1/0/1', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/9', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/22', address: '文登6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/23', address: '荣成7604', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/24', address: '荣成7604', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-威海7503',
-          ip: '10.253.174.240',
-          ups: '电源正常',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE0/0/25', address: '威海6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/25', address: '威海6520', input: -5.19, output: -1.78 },
-            { port: 'GE0/0/3', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'GE0/0/1', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'XGE2/0/2', address: '文登6520', input: -5.19, output: -1.78 },
-            { port: 'XGE2/0/1', address: '乳山6520', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-文登6520',
-          ip: '10.253.174.225',
-          ups: '暂不支持',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE1/0/6', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/22', address: '荣成6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/21', address: '乳山6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/23', address: '文登7604', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/24', address: '文登7604', input: -5.19, output: -1.78 }
-          ]
-        },
-        {
-          name: 'IPTV环网-荣成6520',
-          ip: '10.253.174.193',
-          ups: '电源异常',
-          errorNum: 0,
-          portList: [
-            { port: 'XGE1/0/1', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/9', address: '威海7503', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/22', address: '文登6520', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/23', address: '荣成7604', input: -5.19, output: -1.78 },
-            { port: 'XGE1/0/24', address: '荣成7604', input: -5.19, output: -1.78 }
-          ]
-        }
-      ],
+      dataList: [],
       tableList: [],
+      portlist: [],
+      powerList: [],
       chartsList: []
     }
   },
+  computed: {
+    ...mapGetters({
+      sbConfig: 'config/getSwitchboardConfig'
+    })
+  },
   mounted() {
     this.$nextTick(() => {
-      this.dateTime = this.getNowDateTime()
-      this.tableList = this.dataList
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
       canvas.width = canvas.height = 160
@@ -285,7 +163,15 @@ export default {
       ctx.rotate(-Math.PI / 4)
       ctx.fillText(`威海广电网络`, 0, 0)
       this.waterMark = canvas
-      this.initCharts()
+      // this.tableList = this.dataList
+      // this.initCharts()
+      const lastSBIRecord = localStorage.getItem('lastSBIRecord')
+      if (lastSBIRecord) {
+        const lastSBIRecordObj = JSON.parse(lastSBIRecord)
+        this.dataList = lastSBIRecordObj.dataList
+        this.dateTime = lastSBIRecordObj.dateTime
+        this.search()
+      }
     })
   },
   methods: {
@@ -311,47 +197,104 @@ export default {
     },
     openErrorLog() {
       if (this.errorNum) {
-        this.$refs.errorLogPage.loadData({ dateTime: this.dateTime })
+        this.$refs.errorLogPage.loadData({
+          dateTime: this.dateTime,
+          tableList: this.tableList.filter(iptv => {
+            return iptv.vd
+          })
+        })
       }
     },
-    search() {
+    search(isSaveLocalStorage) {
+      if (isSaveLocalStorage) {
+        localStorage.setItem('lastSBIRecord', JSON.stringify({
+          dataList: this.dataList,
+          dateTime: this.dateTime
+        }))
+      }
       this.tableList = JSON.parse(JSON.stringify(this.dataList))
-      if (this.query.ip) {
+      if (this.query.switchIP) {
         this.tableList = this.tableList.filter(item => {
-          return item.ip.indexOf(this.query.ip) >= 0
+          return item.switchIP.indexOf(this.query.switchIP) >= 0
         })
       }
-      if (this.query.port) {
+      if (this.query.portName) {
         this.tableList.forEach(iptv => {
-          iptv.portList = iptv.portList.filter(item => {
-            return item.port.indexOf(this.query.port) >= 0
+          iptv.switchPortList = iptv.switchPortList.filter(item => {
+            return item.portName.indexOf(this.query.portName) >= 0
           })
         })
         this.tableList = this.tableList.filter(item => {
-          return item.portList.length
+          return item.switchPortList.length
         })
       }
-      if (this.query.address) {
+      if (this.query.portDescription) {
         this.tableList.forEach(iptv => {
-          iptv.portList = iptv.portList.filter(item => {
-            return item.address.indexOf(this.query.address) >= 0
+          iptv.switchPortList = iptv.switchPortList.filter(item => {
+            return item.portDescription.indexOf(this.query.portDescription) >= 0
           })
         })
         this.tableList = this.tableList.filter(item => {
-          return item.portList.length
+          return item.switchPortList.length
         })
       }
+      this.loading = false
       this.initCharts()
+      this.validateValue()
     },
     resetSearch() {
-      this.query.ip = ''
-      this.query.port = ''
-      this.query.address = ''
+      this.query.switchIP = ''
+      this.query.portName = ''
+      this.query.portDescription = ''
       this.tableList = this.dataList
-      this.initCharts()
+      this.search()
     },
     toSetting() {
       this.$refs.settingPage.loadData()
+    },
+    validateValue() {
+      this.deviceNum = 0
+      this.dataNum = 0
+      this.errorNum = 0
+      // 电源
+      this.tableList.forEach(swObj => {
+        let stu = 0
+        swObj.switchPowerList.forEach(powerObj => {
+          stu += powerObj.powerState
+        })
+        if (stu === swObj.switchPowerList.length) {
+          swObj.upsStu = '电源正常'
+        } else {
+          swObj.upsStu = '电源异常'
+        }
+      })
+      // 端口
+      this.tableList.forEach(swObj => {
+        swObj.switchPortList.forEach(pObj => {
+          if (
+            pObj.receiveOptical === '网管不上' ||
+            (this.sbConfig.maxInputOP && Number(this.sbConfig.maxInputOP) < (Number(pObj.receiveOptical))) ||
+            (this.sbConfig.minInputOP && Number(this.sbConfig.minInputOP) > (Number(pObj.receiveOptical)))
+          ) {
+            pObj.vr = true
+            this.errorNum++
+            swObj.vd = true
+          }
+          if (
+            pObj.outputOptical === '网管不上' ||
+            (this.sbConfig.maxOutputOP && Number(this.sbConfig.maxOutputOP) < (Number(pObj.outputOptical))) ||
+            (this.sbConfig.minOutputOP && Number(this.sbConfig.minOutputOP) > (Number(pObj.outputOptical)))
+          ) {
+            pObj.vo = true
+            if (!pObj.vr) {
+              this.errorNum++
+              swObj.vd = true
+            }
+          }
+          this.dataNum++
+        })
+        this.deviceNum++
+      })
     },
     toHistory(iptv, port) {
       this.$refs.historyPage.loadData(iptv, port)
@@ -361,12 +304,12 @@ export default {
         this.tableList.forEach((iptv, index) => {
           const dataList = []
           let sum = 0
-          iptv.portList.forEach(item => {
-            const rand = this.randNum(10, 30, 1, true)[0]
-            sum += rand
+          iptv.switchPortList.forEach(item => {
+            const value = (Number(item.receiveOptical) || 0) + 20
+            sum += value
             dataList.push({
-              value: rand,
-              name: item.port
+              value: value,
+              name: item.portName
             })
           })
           dataList.push({
@@ -396,6 +339,9 @@ export default {
             color: this.colorScheme,
             tooltip: {
               trigger: 'item',
+              valueFormatter: (value) => {
+                return (value - 20).toFixed(2)
+              },
               position: ['24%', '70%']
             },
             legend: {
@@ -412,7 +358,7 @@ export default {
               {
                 type: 'pie',
                 roseType: 'radius',
-                radius: ['70%', '100%'],
+                radius: ['70%', '90%'],
                 center: ['50%', '100%'],
                 startAngle: 180,
                 label: {
@@ -427,12 +373,12 @@ export default {
         this.tableList.forEach((iptv, index) => {
           const dataList = []
           let sum = 0
-          iptv.portList.forEach(item => {
-            const rand = this.randNum(10, 30, 1, true)[0]
-            sum += rand
+          iptv.switchPortList.forEach(item => {
+            const value = (Number(item.outputOptical) || 0) + 20
+            sum += value
             dataList.push({
-              value: rand,
-              name: item.port
+              value: value,
+              name: item.portName
             })
           })
           dataList.push({
@@ -462,6 +408,9 @@ export default {
             color: this.colorScheme,
             tooltip: {
               trigger: 'item',
+              valueFormatter: (value) => {
+                return (value - 20).toFixed(2)
+              },
               position: ['24%', '70%']
             },
             legend: {
@@ -478,7 +427,7 @@ export default {
               {
                 type: 'pie',
                 roseType: 'radius',
-                radius: ['70%', '100%'],
+                radius: ['70%', '90%'],
                 center: ['50%', '100%'],
                 startAngle: 180,
                 label: {
@@ -492,8 +441,103 @@ export default {
         })
       })
     },
+    readSwitchPort(parmObj) {
+      return this.$post({
+        url: this.$urlPath.readSwitchPort,
+        data: {
+          switchIP: parmObj.switchIP,
+          receiveOpticalOid: parmObj.receiveOpticalOid,
+          outputOpticalOid: parmObj.outputOpticalOid
+        }
+      }).then((res) => {
+        parmObj.receiveOptical = res.SwitchOptical.OpticalData.receiveOptical
+        parmObj.outputOptical = res.SwitchOptical.OpticalData.outputOptical
+        parmObj.isComplete = true
+      })
+    },
+    readSwitchPower(parmObj) {
+      return this.$post({
+        url: this.$urlPath.readSwitchPower,
+        data: {
+          switchIP: parmObj.switchIP,
+          powerOid: parmObj.powerOid
+        }
+      }).then((res) => {
+        parmObj.powerState = Number(res.power.powerState) || 0
+        parmObj.isComplete = true
+      })
+    },
+    pullData() {
+      let flagPort = false
+      let flagPower = false
+      this.portlist.forEach(portObj => {
+        this.readSwitchPort(portObj).then(() => {
+          let i
+          for (i = 0; i < this.portlist.length; i++) {
+            if (!this.portlist[i].isComplete) {
+              break
+            }
+          }
+          if (i === this.portlist.length) {
+            flagPort = true
+            if (flagPort && flagPower) {
+              this.search(true)
+            }
+          }
+        })
+      })
+      this.powerList.forEach(portObj => {
+        this.readSwitchPower(portObj).then(() => {
+          let i
+          for (i = 0; i < this.powerList.length; i++) {
+            if (!this.powerList[i].isComplete) {
+              break
+            }
+          }
+          if (i === this.powerList.length) {
+            flagPower = true
+            if (flagPort && flagPower) {
+              this.search(true)
+            }
+          }
+        })
+      })
+    },
+    clearData() {
+      this.dateTime = ''
+      this.deviceNum = 0
+      this.dataNum = 0
+      this.errorNum = 0
+      this.dataList = []
+      this.tableList = []
+      this.portlist = []
+      this.powerList = []
+      this.chartsList = []
+    },
     loadData() {
-
+      this.clearData()
+      this.dateTime = this.getNowDateTime()
+      this.loading = true
+      this.$post({
+        url: this.$urlPath.ShowSwitchDeviceList
+      }).then((res) => {
+        this.dataList = res.switchDeviceList || []
+        this.dataList.forEach(swObj => {
+          swObj.switchPortList.forEach(tempObj => {
+            tempObj.switchIP = swObj.switchIP
+            tempObj.isComplete = false
+            this.portlist.push(tempObj)
+          })
+          swObj.switchPowerList.forEach(tempObj => {
+            tempObj.switchIP = swObj.switchIP
+            tempObj.isComplete = false
+            this.powerList.push(tempObj)
+          })
+        })
+        this.pullData()
+      }).catch((error) => {
+        this.$errorMsg(error || '接口调用失败，未知异常')
+      })
     }
   }
 }
@@ -540,6 +584,33 @@ export default {
       padding-right: 20px;
       color: #999999;
       font-size: 14px;
+      .link-loading {
+        position: relative;
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        left: 16px;
+        top: 2px;
+        border-radius: 50%;
+        box-shadow: inset 1px -1px #999999;
+        animation: spin 4s linear infinite;
+        &::before,
+        &::after {
+          position: absolute;
+          content: "";
+          width: 100%;
+          height: 100%;
+          background: inherit;
+          border-radius: inherit;
+          box-shadow: inherit;
+        }
+        &::before {
+          filter: blur(5px);
+        }
+        &::after {
+          filter: blur(50px);
+        }
+      }
       img {
         position: relative;
         top: 3px;
@@ -640,6 +711,11 @@ export default {
     height: 70vh;
     padding: 4px 20px;
     overflow-y: auto;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
   }
 }
 </style>

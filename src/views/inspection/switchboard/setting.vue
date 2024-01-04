@@ -7,19 +7,19 @@
     :visible="visible"
     :title="title"
     top="25vh"
-    width="590px"
+    width="690px"
   >
     <el-form ref="formViewRef" :model="formData" :rules="rules" size="mini" :status-icon="true" label-width="180px">
       <el-form-item label="光接收功率：" class="form-cell" style="margin: 0;padding: 0">
         <div class="cell-box" style="display: flex">
           <el-form-item prop="minInputTPE">
-            <el-input v-model.number="formData.minInputOP" size="mini" placeholder="阈值下限" class="cell-input">
+            <el-input v-model="formData.minInputOP" size="mini" placeholder="阈值下限" class="cell-input">
               <template slot="append">下限 dBm</template>
             </el-input>
           </el-form-item>
           <div style="width: 20px;text-align: center">~</div>
           <el-form-item prop="maxInputTPE">
-            <el-input v-model.number="formData.maxInputOP" size="mini" placeholder="阈值上限" class="cell-input">
+            <el-input v-model="formData.maxInputOP" size="mini" placeholder="阈值上限" class="cell-input">
               <template slot="append">上限 dBm</template>
             </el-input>
           </el-form-item>
@@ -28,13 +28,13 @@
       <el-form-item label="光发射功率：" class="form-cell" style="margin: 0;padding: 0">
         <div class="cell-box" style="display: flex">
           <el-form-item prop="minOutputTPE">
-            <el-input v-model.number="formData.minOutputOP" size="mini" placeholder="阈值下限" class="cell-input">
+            <el-input v-model="formData.minOutputOP" size="mini" placeholder="阈值下限" class="cell-input">
               <template slot="append">下限 dBm</template>
             </el-input>
           </el-form-item>
           <div style="width: 20px;text-align: center">~</div>
           <el-form-item prop="maxOutputTPE">
-            <el-input v-model.number="formData.maxOutputOP" size="mini" placeholder="阈值上限" class="cell-input">
+            <el-input v-model="formData.maxOutputOP" size="mini" placeholder="阈值上限" class="cell-input">
               <template slot="append">上限 dBm</template>
             </el-input>
           </el-form-item>
@@ -50,21 +50,28 @@
 </template>
 <script>
 
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
       visible: false,
       title: '监听设置',
       formData: {
-        minInputOP: -999,
-        maxInputOP: -3.5,
-        minOutputOP: -999,
-        maxOutputOP: -1.69
+        minInputOP: '',
+        maxInputOP: '',
+        minOutputOP: '',
+        maxOutputOP: ''
       },
       rules: {
 
       }
     }
+  },
+  computed: {
+    ...mapGetters({
+      switchboardConfig: 'config/getSwitchboardConfig'
+    })
   },
   mounted() {
   },
@@ -82,8 +89,11 @@ export default {
     submitForm() {
       this.$refs.formViewRef.validate((valid, obj) => {
         if (valid) {
-          console.log(this.formData)
-          this.cancelView()
+          this.$store.dispatch('config/saveSwitchboardConfig', this.formData).then(() => {
+            this.$successMsg('交换机光功率监听设置已更新')
+            this.cancelView()
+            this.$router.go(0)
+          })
         } else {
           this.$message({
             message: '表单信息有误，请核对无误后提交！',
@@ -93,6 +103,12 @@ export default {
       })
     },
     loadData() {
+      this.formData = {
+        minInputOP: this.switchboardConfig.minInputOP || '',
+        maxInputOP: this.switchboardConfig.maxInputOP || '',
+        minOutputOP: this.switchboardConfig.minOutputOP || '',
+        maxOutputOP: this.switchboardConfig.maxOutputOP || ''
+      }
       this.showView()
     }
   }
@@ -104,7 +120,7 @@ export default {
   min-width: 120px;
 
   .cell-input {
-    width: 154px;
+    width: 200px;
   }
 
   .cell-select {

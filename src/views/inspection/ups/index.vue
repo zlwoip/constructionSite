@@ -12,6 +12,7 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              :default-time="['00:00:00', '23:59:59']"
               size="mini"
             />
           </div>
@@ -387,7 +388,7 @@ export default {
           if (f1 && f2 && f0) {
             item.status = 3
             item.expand = true
-            this.validateUpsValue(item)
+            this.validateValue(item)
           }
         } else {
           this.$errorMsg(res.msg)
@@ -413,7 +414,7 @@ export default {
           if (f1 && f2 && f0) {
             item.status = 3
             item.expand = true
-            this.validateUpsValue(item)
+            this.validateValue(item)
           }
         } else {
           this.$errorMsg(res.msg)
@@ -439,7 +440,7 @@ export default {
           if (f1 && f2 && f0) {
             item.status = 3
             item.expand = true
-            this.validateUpsValue(item)
+            this.validateValue(item)
           }
         } else {
           this.$errorMsg(res.msg)
@@ -448,7 +449,7 @@ export default {
         this.$errorMsg(error || '接口调用失败，未知异常')
       })
     },
-    validateUpsValue(item) {
+    validateValue(item) {
       let tempValue
       let errorNum = 0
       const upsList = item.upsList
