@@ -35,7 +35,7 @@
                 <table v-if="scope.row.switchPortList.length" class="table">
                   <tr class="tr">
                     <th class="th" width="25%">端口名称</th>
-                    <th class="th" width="25%">对应地址</th>
+                    <th class="th" width="25%">端口描述</th>
                     <th class="th" width="25%">接收端OID</th>
                     <th class="th" width="25%">发射端OID</th>
                   </tr>

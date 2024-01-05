@@ -18,7 +18,7 @@
         <table class="table">
           <tr class="tr">
             <th class="th">端口</th>
-            <th class="th">对应地址</th>
+            <th class="th">描述</th>
             <th class="th">光接收功率</th>
             <th class="th">光发射功率</th>
           </tr>

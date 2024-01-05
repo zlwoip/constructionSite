@@ -7,7 +7,7 @@
             <span class="label">数据检索条件:</span>
             <el-input v-model="query.switchIP" clearable size="mini" placeholder="请输入交换机IP" style="width: 180px;margin:0 5px" />
             <el-input v-model="query.portName" clearable size="mini" placeholder="请输入交换机端口" style="width: 180px;margin:0 5px" />
-            <el-input v-model="query.portDescription" clearable size="mini" placeholder="请输入端口对应地址" style="width: 180px;margin:0 5px" />
+            <el-input v-model="query.portDescription" clearable size="mini" placeholder="请输入端口描述" style="width: 180px;margin:0 5px" />
           </div>
           <div class="flex-sub">
             <el-button type="primary" size="mini" icon="el-icon-magic-stick" @click="search">过滤</el-button>
@@ -59,7 +59,7 @@
               <table class="table">
                 <tr class="tr">
                   <th class="th">端口<img :src="require('@/assets/port.png')" style="transform: scaleX(0.9) scaleY(0.9)" /></th>
-                  <th class="th">对应地址<img :src="require('@/assets/locat.png')" /></th>
+                  <th class="th">描述<img :src="require('@/assets/locat.png')" /></th>
                   <th class="th">光接收功率<img :src="require('@/assets/wave.png')" /></th>
                   <th class="th">光发射功率<img :src="require('@/assets/wave.png')" /></th>
                 </tr>
@@ -305,7 +305,7 @@ export default {
           const dataList = []
           let sum = 0
           iptv.switchPortList.forEach(item => {
-            const value = (Number(item.receiveOptical) || 0) + 20
+            const value = (Number(item.receiveOptical) || 0) + 30
             sum += value
             dataList.push({
               value: value,
@@ -340,7 +340,7 @@ export default {
             tooltip: {
               trigger: 'item',
               valueFormatter: (value) => {
-                return (value - 20).toFixed(2)
+                return (value - 30).toFixed(2)
               },
               position: ['24%', '70%']
             },
@@ -374,7 +374,7 @@ export default {
           const dataList = []
           let sum = 0
           iptv.switchPortList.forEach(item => {
-            const value = (Number(item.outputOptical) || 0) + 20
+            const value = (Number(item.outputOptical) || 0) + 30
             sum += value
             dataList.push({
               value: value,
@@ -409,7 +409,7 @@ export default {
             tooltip: {
               trigger: 'item',
               valueFormatter: (value) => {
-                return (value - 20).toFixed(2)
+                return (value - 30).toFixed(2)
               },
               position: ['24%', '70%']
             },

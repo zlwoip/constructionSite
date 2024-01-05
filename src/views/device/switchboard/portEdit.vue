@@ -17,7 +17,7 @@
           <el-input v-model="formData.portName" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="对应地址：" class="form-cell" prop="portDescription">
+      <el-form-item label="端口描述：" class="form-cell" prop="portDescription">
         <div class="cell-box">
           <el-input v-model="formData.portDescription" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
