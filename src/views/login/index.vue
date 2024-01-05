@@ -11,9 +11,9 @@
       <div class="right">
         <div class="my-width flex-sub flex justify-center align-center">
           <div class="logo-wrapper">
-            <img :src="require('@/assets/work_logo.png')" />
+            <img :src="require('@/assets/work_logo.png')" style="width: 104px;height:80px" />
           </div>
-          <div class="title margin-left">威海广电智能运维云平台</div>
+          <div class="title margin-left" style="font-size: 48px">威海广电智能运维云平台</div>
         </div>
         <div class="form-container">
           <div class="item-wrapper">

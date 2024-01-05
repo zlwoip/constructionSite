@@ -12,7 +12,7 @@ module.exports = {
   productionSourceMap: false,
   devServer: {
     hot: true,
-    port: 5566,
+    port: 80,
     open: true,
     proxy: {
       '/interface': {
