@@ -35,7 +35,7 @@ export default {
   data() {
     return {
       visible: false,
-      title: '新增巡检计划',
+      title: '新增巡检',
       inspectorList: [],
       formData: {
         dateTime: '',
@@ -86,7 +86,7 @@ export default {
         url: this.$urlPath.ShowInspectionPersonList
       }).then((res) => {
         this.inspectorList = (res.inspectionPersonList || []).filter(item => {
-          return item.state !== '0'
+          return item.state !== '0' && item.type === '值机'
         })
       }).catch((error) => {
         this.$errorMsg(error || '接口调用失败，未知异常')

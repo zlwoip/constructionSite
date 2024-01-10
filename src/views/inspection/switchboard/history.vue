@@ -106,6 +106,12 @@ export default {
           inputDataList.push([new Date(item.DateTime).getTime(), Number(item.receiveOptical) || 0])
           outputDataList.push([new Date(item.DateTime).getTime(), Number(item.outputOptical) || 0])
         })
+        inputDataList.sort((a, b) => {
+          return a[0] - b[0]
+        })
+        outputDataList.sort((a, b) => {
+          return a[0] - b[0]
+        })
         const option = {
           tooltip: {
             trigger: 'axis',

@@ -32,6 +32,16 @@
           <el-input v-model="formData.outputOpticalOid" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
+      <el-form-item label="报警值下限：" class="form-cell" prop="outputOpticalOid">
+        <div class="cell-box">
+          <el-input v-model="formData.lowerAlarmValue" size="mini" placeholder="单行文本输入" class="cell-input" />
+        </div>
+      </el-form-item>
+      <el-form-item label="报警值上限：" class="form-cell" prop="outputOpticalOid">
+        <div class="cell-box">
+          <el-input v-model="formData.upperAlarmValue" size="mini" placeholder="单行文本输入" class="cell-input" />
+        </div>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer" style="text-align: center">
       <el-button size="mini" @click="cancelView">取消</el-button>
@@ -58,6 +68,8 @@ export default {
         portDescription: '',
         receiveOpticalOid: '',
         outputOpticalOid: '',
+        upperAlarmValue: '',
+        lowerAlarmValue: '',
         switchIP: ''
       },
       switchObj: {},
@@ -126,7 +138,9 @@ export default {
           portName: '',
           portDescription: '',
           receiveOpticalOid: '',
-          outputOpticalOid: ''
+          outputOpticalOid: '',
+          upperAlarmValue: '',
+          lowerAlarmValue: ''
         }
         this.title = '新增端口'
       }

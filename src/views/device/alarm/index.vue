@@ -4,46 +4,44 @@
       <el-card :body-style="{padding: '0'}" shadow="never">
         <div class="wrapper">
           <div class="left-wrapper">
-            <span class="label">基本操作:</span>
+            <span class="label">检索时间范围:</span>
+            <el-date-picker
+              v-model="timeList"
+              type="datetimerange"
+              :picker-options="pickerOptions"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :default-time="['00:00:00', '23:59:59']"
+              size="mini"
+            />
           </div>
-          <div class="flex-sub"></div>
+          <div class="flex-sub">
+            <el-button type="primary" size="mini" icon="el-icon-search" @click="toSearch">查询</el-button>
+          </div>
           <div class="right-wrapper">
-            <el-button type="primary" size="mini" icon="el-icon-plus" @click="toAdd">新增</el-button>
+            <el-button type="success" size="mini" icon="el-icon-close-notification">批量解除</el-button>
           </div>
         </div>
       </el-card>
     </div>
     <el-card :body-style="{padding: 0}" class="table-container" shadow="never">
       <div class="wrapper" style="overflow: hidden">
-        <el-table v-loading="loading" :data="tableList" size="mini" stripe tooltip-effect="dark" height="calc(70vh - 42px)">
+        <el-table v-loading="loading" :data="tableList" size="mini" stripe tooltip-effect="dark" height="calc(70vh - 42px)" @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="55" />
           <el-table-column type="index" width="60" label="序号" :index="indexMethod" />
-          <el-table-column align="center" label="姓名" prop="name" />
-          <el-table-column align="center" label="电子签名">
+          <el-table-column align="center" label="报警设备" prop="machine" width="220" />
+          <el-table-column align="center" label="报警类型" prop="type" width="120" />
+          <el-table-column align="center" label="报警信息描述" prop="description" />
+          <el-table-column align="center" label="报警时间" prop="datetime" width="220" />
+          <el-table-column align="center" label="状态" prop="handle" width="80">
             <template slot-scope="scope">
-              <div class="avatar-container">
-                <el-image :src="require(`@/assets/signImg/${scope.row.imagePath || 'signTemp'}.png`)" class="avatar avatar-vip" />
-              </div>
+              <span>{{ scope.row.handle === '1' ? '已解除' : '未接触' }}</span>
             </template>
           </el-table-column>
-          <el-table-column align="center" label="组别" prop="type" />
-          <el-table-column align="center" label="性别" prop="sex">
+          <el-table-column label="操作" align="center" width="80">
             <template slot-scope="scope">
-              <div class="gender-container flex justify-center align-center">
-                <img class="gender-icon" :src="scope.row.sex === '0' ? require('@/assets/icon_sex_man.png') : require('@/assets/icon_sex_woman.png')" />
-                <span>{{ scope.row.sex === '0' ? '男' : '女' }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column align="center" label="联系电话" prop="telephone" />
-          <el-table-column align="center" label="禁用/启用">
-            <template slot-scope="scope">
-              <el-switch v-model="scope.row.state" :active-value="'1'" :inactive-value="'0'" @change="changeState(scope.row)" />
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" align="center" width="120">
-            <template slot-scope="scope">
-              <el-tooltip content="编辑"><el-button round plain type="primary" size="mini" icon="el-icon-edit-outline" @click="toEdit(scope.row)" /></el-tooltip>
-              <el-tooltip content="删除"><el-button round plain type="danger" size="mini" icon="el-icon-delete" @click="toDelete(scope.row)" /></el-tooltip>
+              <el-tooltip content="解除"><el-button round plain type="success" size="mini" icon="el-icon-close-notification" @click="toDelete(scope.row)" /></el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -51,14 +49,12 @@
         <el-pagination :total="total" :current-page="page" :page-size="pageSize" style="margin-top: 8px;" layout="total, prev, pager, next, sizes" @size-change="sizeChange" @current-change="pageChange" />
       </div>
     </el-card>
-    <edit-page ref="editPage" />
   </div>
 </template>
 
 <script>
-import editPage from './edit'
+
 export default {
-  components: { editPage },
   data() {
     return {
       waterMark: '',
@@ -66,39 +62,47 @@ export default {
       page: 1,
       pageSize: 20,
       total: 0,
+      multipleSelection: [],
       query: {},
+      timeList: [],
       tableData: [],
       tableList: []
     }
   },
   mounted() {
     this.$nextTick(() => {
+      const now = new Date()
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59)
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      start.setTime(start.getTime() - 3600 * 1000 * 48)
+      this.timeList = [start, end]
       this.loadData()
     })
   },
   methods: {
+    getDateTime(now) {
+      if (!now) {
+        now = new Date()
+      }
+      return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
     indexMethod(index) {
       return 1 + index + this.page * this.pageSize - this.pageSize
-    },
-    changeState(item) {
-      this.$post({
-        url: this.$urlPath.updateInspectionPerson,
-        data: item
-      }).then((res) => {
-        this.$successMsg(res.msg)
-        this.loadData()
-      }).catch((error) => {
-        this.$errorMsg(error || '接口调用失败，未知异常')
-      })
-    },
-    toAdd() {
-      this.$refs.editPage.loadData()
     },
     toEdit(item) {
       this.$refs.editPage.loadData(item)
     },
     toDelete(item) {
-      this.$confirm(`确认删除“${item.name}”值机员吗?`, '提示', {
+      if (!item && !this.multipleSelection.length) {
+        return this.$message({
+          message: '未选取数据',
+          type: 'info'
+        })
+      }
+      this.$confirm(`确认解除该条报警吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -140,11 +144,10 @@ export default {
     loadData() {
       this.tableList = []
       this.$post({
-        url: this.$urlPath.ShowInspectionPersonList,
+        url: this.$urlPath.showAlarm,
         data: {
-          page: this.page,
-          pageSize: this.pageSize,
-          ...this.query
+          startDate: this.getDateTime(this.timeList[0]),
+          endDate: this.getDateTime(this.timeList[1])
         }
       }).then((res) => {
         this.tableData = res.inspectionPersonList || []

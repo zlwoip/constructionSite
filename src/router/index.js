@@ -72,11 +72,29 @@ export const routes = [
         }
       },
       {
+        path: 'alarm',
+        name: 'alarm',
+        component: () => import('@/views/device/alarm/index'),
+        meta: {
+          title: '报警列表',
+          cacheable: false
+        }
+      },
+      {
         path: 'operator',
         name: 'operator',
         component: () => import('@/views/device/operator/index'),
         meta: {
-          title: '值机员',
+          title: '人员名单',
+          cacheable: false
+        }
+      },
+      {
+        path: 'scheduling',
+        name: 'scheduling',
+        component: () => import('@/views/device/scheduling/index'),
+        meta: {
+          title: '排班表',
           cacheable: false
         }
       }

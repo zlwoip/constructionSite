@@ -12,13 +12,6 @@
           <el-input v-model="formData.imagePath" size="mini" placeholder="单行文本输入" class="cell-input" />
         </div>
       </el-form-item>
-      <el-form-item label="组别：" class="form-cell" prop="sex">
-        <div class="cell-box">
-          <el-select v-model="formData.type" size="mini" placeholder="请选择" class="cell-select">
-            <el-option v-for="item in tp_type" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </div>
-      </el-form-item>
       <el-form-item label="性别：" class="form-cell" prop="sex">
         <div class="cell-box">
           <el-select v-model="formData.sex" size="mini" placeholder="请选择" class="cell-select">
@@ -48,22 +41,15 @@ export default {
         { label: '男', value: '0' },
         { label: '女', value: '1' }
       ],
-      tp_type: [
-        { label: '值机', value: '值机' },
-        { label: '技术', value: '技术' }
-      ],
-      title: '',
+      title: '值班人员编辑',
       formData: {
         name: '',
         imagePath: '',
-        type: '值机',
         sex: '0',
         telephone: '',
         state: '1'
       },
-      rules: {
-        name: { required: true, message: '请填写电源名称', trigger: 'blur' }
-      }
+      rules: {}
     }
   },
   mounted() {
@@ -82,18 +68,7 @@ export default {
     submitForm() {
       this.$refs.formViewRef.validate((valid, obj) => {
         if (valid) {
-          this.$post({
-            url: this.formData.id ? this.$urlPath.updateInspectionPerson : this.$urlPath.addInspectionPerson,
-            data: {
-              ...this.formData
-            }
-          }).then((res) => {
-            this.$successMsg(res.msg)
-            this.cancelView()
-            this.$parent.loadData()
-          }).catch((error) => {
-            this.$errorMsg(error || '接口调用失败，未知异常')
-          })
+
         } else {
           this.$message({
             message: '表单信息有误，请核对无误后提交！',
@@ -105,17 +80,14 @@ export default {
     loadData(item) {
       if (item) {
         this.formData = item
-        this.title = '值机员信息编辑'
       } else {
         this.formData = {
           name: '',
           imagePath: '',
-          type: '值机',
           sex: '0',
           telephone: '',
           state: '1'
         }
-        this.title = '值机员信息录入'
       }
       this.showView()
     }

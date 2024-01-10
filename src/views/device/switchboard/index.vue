@@ -34,10 +34,12 @@
                 </div>
                 <table v-if="scope.row.switchPortList.length" class="table">
                   <tr class="tr">
-                    <th class="th" width="25%">端口名称</th>
-                    <th class="th" width="25%">端口描述</th>
-                    <th class="th" width="25%">接收端OID</th>
-                    <th class="th" width="25%">发射端OID</th>
+                    <th class="th" width="20%">端口名称</th>
+                    <th class="th" width="20%">端口描述</th>
+                    <th class="th" width="20%">接收端OID</th>
+                    <th class="th" width="20%">发射端OID</th>
+                    <th class="th" width="10%">报警值下限</th>
+                    <th class="th" width="10%">报警值上限</th>
                   </tr>
                   <tr v-for="(port, ii) in scope.row.switchPortList" :key="'p_'+ii" class="tr">
                     <td>
@@ -51,6 +53,8 @@
                     <td>{{ port.portDescription }}</td>
                     <td>{{ port.receiveOpticalOid }}</td>
                     <td>{{ port.outputOpticalOid }}</td>
+                    <td>{{ port.lowerAlarmValue || `-` }}</td>
+                    <td>{{ port.upperAlarmValue || `-` }}</td>
                   </tr>
                 </table>
                 <div v-else class="table-card-noData">暂无数据</div>
@@ -59,9 +63,9 @@
                 </div>
                 <table v-if="scope.row.switchPowerList.length" class="table">
                   <tr class="tr">
-                    <th class="th" width="25%">电源名称</th>
-                    <th class="th" width="25%">电源型号</th>
-                    <th class="th" width="50%">设备OID</th>
+                    <th class="th" width="20%">电源名称</th>
+                    <th class="th" width="20%">电源型号</th>
+                    <th class="th" width="60%">设备OID</th>
                   </tr>
                   <tr v-for="(ups, ii) in scope.row.switchPowerList" :key="'u_'+ii" class="tr">
                     <td>
