@@ -1,5 +1,5 @@
 <template>
-  <div style="height: calc(70vh + 73px); overflow: auto">
+  <div style="height: calc(80vh + 4px); overflow: auto">
     <div class="title">
       <div><input id="title-btn-left" type="button" value="<" class="title-btn-hover" @click="lastMonthCalender()" />
       </div>
@@ -25,11 +25,11 @@
       </div>
       <div v-for="(weekArr,r) in showMonthCalender" :key="'r_'+r" class="tableRow">
         <div v-for="(day,c) in weekArr" :key="'c_'+r+'_'+c" :class="day.cssClass" :style="{background:day.dataTimeStr<todayStr?'rgba(166, 204, 173, 0.5)':''}" @click="toEdit(day)">
-          <div style="width: 100%;display:flex">
+          <div style="width:100%;height:96px;display:flex">
             <div class="left">
               <div class="day">{{ day.day }}</div>
-              <div class="count">值机:<span>04</span></div>
-              <div class="count">技术:<span>44</span></div>
+              <div class="count">值机:<span>4</span></div>
+              <div class="count">技术:<span>8</span></div>
               <div class="text-line" style="background-color: rgba(0,200,200,0.05);">
                 <div class="label" style="background-color: rgba(0,0,0,0.5);color: #CDC0B0">备</div>
                 <div class="roll" title="于丽婷">丽婷</div>
@@ -49,7 +49,7 @@
                 <div class="roll" title="于丽婷、于丽婷、于丽婷">于丽婷 于丽婷 于丽婷</div>
               </div>
             </div>
-<!--            <div style="width: 75%;font-size:12px;text-align:center;padding-top:10px">当日无排班</div>-->
+<!--            <div class="right" style="text-align:center;padding-top:10px">当日无排班</div>-->
           </div>
         </div>
       </div>
@@ -157,8 +157,8 @@ export default {
         createCalender.push(weekTempArr)
       }
       this.showMonthCalender = createCalender
-      const startTime = createCalender[0][0].year + '-' + createCalender[0][0].month + '-' + createCalender[0][0].day
-      const endTime = createCalender[5][6].year + '-' + createCalender[5][6].month + '-' + createCalender[5][6].day
+      // const startTime = createCalender[0][0].year + '-' + createCalender[0][0].month + '-' + createCalender[0][0].day
+      // const endTime = createCalender[5][6].year + '-' + createCalender[5][6].month + '-' + createCalender[5][6].day
     },
     // 生成指定年，月的日历
     monthCalender(year, month) {

@@ -20,7 +20,7 @@
             <el-button type="primary" size="mini" icon="el-icon-search" @click="toSearch">查询</el-button>
           </div>
           <div class="right-wrapper">
-            <el-button type="success" size="mini" icon="el-icon-close-notification">批量解除</el-button>
+            <el-button type="success" size="mini" icon="el-icon-close-notification" @click="toRemove()">批量解除</el-button>
           </div>
         </div>
       </el-card>
@@ -30,18 +30,19 @@
         <el-table v-loading="loading" :data="tableList" size="mini" stripe tooltip-effect="dark" height="calc(70vh - 42px)" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" />
           <el-table-column type="index" width="60" label="序号" :index="indexMethod" />
-          <el-table-column align="center" label="报警设备" prop="machine" width="220" />
-          <el-table-column align="center" label="报警类型" prop="type" width="120" />
-          <el-table-column align="center" label="报警信息描述" prop="description" />
+          <el-table-column label="设备IP" prop="machine" width="150" />
+          <el-table-column label="报警信息描述" prop="description" />
+          <el-table-column align="center" label="报警类型" prop="type" width="100" />
           <el-table-column align="center" label="报警时间" prop="datetime" width="220" />
           <el-table-column align="center" label="状态" prop="handle" width="80">
             <template slot-scope="scope">
-              <span>{{ scope.row.handle === '1' ? '已解除' : '未接触' }}</span>
+              <span v-if="scope.row.handle === 1" style="color: #00CD66">已解除</span>
+              <span v-else style="color: #a3a3a3">未解除</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80">
             <template slot-scope="scope">
-              <el-tooltip content="解除"><el-button round plain type="success" size="mini" icon="el-icon-close-notification" @click="toDelete(scope.row)" /></el-tooltip>
+              <el-tooltip content="解除"><el-button round plain type="success" size="mini" icon="el-icon-close-notification" :disabled="scope.row.handle === 1" @click="toRemove(scope.row)" /></el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -58,6 +59,41 @@ export default {
   data() {
     return {
       waterMark: '',
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近24小时',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近72小时',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 3)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近7天',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近30天',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
       loading: false,
       page: 1,
       pageSize: 20,
@@ -95,22 +131,31 @@ export default {
     toEdit(item) {
       this.$refs.editPage.loadData(item)
     },
-    toDelete(item) {
+    toRemove(item) {
       if (!item && !this.multipleSelection.length) {
         return this.$message({
           message: '未选取数据',
           type: 'info'
         })
       }
-      this.$confirm(`确认解除该条报警吗?`, '提示', {
+      let ids
+      if (item) {
+        ids = [item.alarmId]
+      } else {
+        ids = this.multipleSelection.map(obj => {
+          return obj.alarmId
+        })
+      }
+      this.$confirm(`确认解除报警吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.$post({
-          url: this.$urlPath.deleteInspectionPerson,
+          url: this.$urlPath.updateAlarm,
           data: {
-            id: item.id
+            alarmIds: ids.join('&'),
+            handle: 1
           }
         }).then((res) => {
           this.$successMsg(res.msg)
@@ -150,7 +195,7 @@ export default {
           endDate: this.getDateTime(this.timeList[1])
         }
       }).then((res) => {
-        this.tableData = res.inspectionPersonList || []
+        this.tableData = res.alarmInfoList || []
         this.dataFilter()
       }).catch((error) => {
         this.$errorMsg(error || '接口调用失败，未知异常')
