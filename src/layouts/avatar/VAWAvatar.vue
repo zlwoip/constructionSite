@@ -11,7 +11,7 @@
         </span>
       </div>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item icon="el-icon-user" command="personalCenter">
+        <el-dropdown-item icon="el-icon-user" command="personalCenter" style="display: none">
           个人中心
         </el-dropdown-item>
         <el-dropdown-item icon="el-icon-switch-button" command="logout">

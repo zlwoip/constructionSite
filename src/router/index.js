@@ -57,7 +57,7 @@ export const routes = [
     component: Layout,
     hidden: false,
     meta: {
-      title: '仪表面板',
+      title: '功能面板',
       icon: 'dashboard'
     },
     children: [

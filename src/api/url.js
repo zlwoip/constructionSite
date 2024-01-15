@@ -62,3 +62,8 @@ export const ReadSwitchHistoryData = '/interface/opticalpower.asmx/ReadSwitchHis
 
 export const showAlarm = '/interface/opticalpower.asmx/showAlarm'
 export const updateAlarm = '/interface/opticalpower.asmx/updateAlarm'
+export const showAlarmLast7DayCount = '/interface/opticalpower.asmx/showAlarmLast7DayCount'
+
+export const addClasses = '/interface/InspectionPerson.asmx/addClasses'
+export const updateClasses = '/interface/InspectionPerson.asmx/updateClasses'
+export const showClassesList = '/interface/InspectionPerson.asmx/showClassesList'

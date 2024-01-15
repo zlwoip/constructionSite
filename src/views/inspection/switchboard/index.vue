@@ -15,7 +15,7 @@
           </div>
           <div class="right-wrapper">
             <el-button type="primary" size="mini" icon="el-icon-download" @click="loadData">拉取数据</el-button>
-            <el-button type="warning" size="mini" icon="el-icon-setting" @click="toSetting">监听设置</el-button>
+            <el-button type="warning" size="mini" icon="el-icon-setting" style="display:none" @click="toSetting">监听设置</el-button>
           </div>
         </div>
       </el-card>
@@ -241,6 +241,25 @@ export default {
       this.loading = false
       this.initCharts()
       this.validateValue()
+      if (isSaveLocalStorage) {
+        const lastSBIResult = localStorage.getItem('lastSBIResult')
+        if (lastSBIResult) {
+          const lastSBIResultObj = JSON.parse(lastSBIResult)
+          localStorage.setItem('lastSBIResult', JSON.stringify({
+            dataNum: this.dataNum,
+            errorNum: this.errorNum,
+            dateTime: this.dateTime,
+            count: (Number(lastSBIResultObj.count) || 0) + 1
+          }))
+        } else {
+          localStorage.setItem('lastSBIResult', JSON.stringify({
+            dataNum: this.dataNum,
+            errorNum: this.errorNum,
+            dateTime: this.dateTime,
+            count: 1
+          }))
+        }
+      }
     },
     resetSearch() {
       this.query.switchIP = ''
@@ -273,18 +292,14 @@ export default {
         swObj.switchPortList.forEach(pObj => {
           if (
             pObj.receiveOptical === '网管不上' ||
-            (this.sbConfig.maxInputOP && Number(this.sbConfig.maxInputOP) < (Number(pObj.receiveOptical))) ||
-            (this.sbConfig.minInputOP && Number(this.sbConfig.minInputOP) > (Number(pObj.receiveOptical)))
+            (pObj.upperAlarmValue && Number(pObj.upperAlarmValue) < (Number(pObj.receiveOptical))) ||
+            (pObj.lowerAlarmValue && Number(pObj.lowerAlarmValue) > (Number(pObj.receiveOptical)))
           ) {
             pObj.vr = true
             this.errorNum++
             swObj.vd = true
           }
-          if (
-            pObj.outputOptical === '网管不上' ||
-            (this.sbConfig.maxOutputOP && Number(this.sbConfig.maxOutputOP) < (Number(pObj.outputOptical))) ||
-            (this.sbConfig.minOutputOP && Number(this.sbConfig.minOutputOP) > (Number(pObj.outputOptical)))
-          ) {
+          if (pObj.outputOptical === '网管不上') {
             pObj.vo = true
             if (!pObj.vr) {
               this.errorNum++

@@ -1,6 +1,6 @@
 <template>
   <!-- 表单渲染 -->
-  <el-dialog append-to-body :close-on-click-modal="false" :before-close="cancelView" :visible="visible" width="540px">
+  <el-dialog append-to-body :close-on-click-modal="false" :before-close="cancelView" :visible="visible" width="580px">
     <el-tabs v-model="activeName">
       <el-tab-pane label="值机排班" name="zj">
         <el-descriptions class="margin-top" :column="1" size="small" border :label-style="{width:'160px'}" :content-style="{position:'relative',paddingRight:'22px'}">
@@ -59,7 +59,7 @@
         </el-descriptions>
       </el-tab-pane>
       <el-tab-pane label="技术排班" name="js">
-        <el-descriptions class="margin-top" :column="1" size="small" border :label-style="{width:'140px'}" :content-style="{position:'relative',paddingRight:'22px'}">
+        <el-descriptions class="margin-top" :column="1" size="small" border :label-style="{width:'120px'}" :content-style="{position:'relative',paddingRight:'22px'}">
           <el-descriptions-item>
             <template slot="label">
               <i class="el-icon-sunrise-1"></i>
@@ -130,6 +130,8 @@ export default {
       nameList: [],
       indicator: '',
       formData: {
+        id: null,
+        datetime: '',
         lb1: [],
         lb2: [],
         lb3: [],
@@ -173,12 +175,42 @@ export default {
     },
     hideView() {
       this.visible = false
+      this.formData = {
+        id: null,
+        datetime: '',
+        lb1: [],
+        lb2: [],
+        lb3: [],
+        lb4: [],
+        bb: [],
+        yb: [],
+        ex: []
+      }
     },
     cancelView() {
       this.hideView()
     },
     submitForm() {
-
+      this.$post({
+        url: this.formData.id ? this.$urlPath.updateClasses : this.$urlPath.addClasses,
+        data: {
+          operatorOne: this.formData.lb1.join(','),
+          operatorTwo: this.formData.lb2.join(','),
+          operatorThree: this.formData.lb3.join(','),
+          operatorDay: this.formData.lb4.join(','),
+          technicianDay: this.formData.bb.join(','),
+          technicianNight: this.formData.yb.join(','),
+          technicianReady: this.formData.ex.join(','),
+          datetime: this.formData.datetime,
+          id: this.formData.id
+        }
+      }).then((res) => {
+        this.$successMsg(res.msg)
+        this.cancelView()
+        this.$parent.updateWebPage()
+      }).catch((error) => {
+        this.$errorMsg(error || '接口调用失败，未知异常')
+      })
     },
     loadData(item) {
       this.$post({
@@ -196,6 +228,47 @@ export default {
         this.js_list = this.js_list.map(item => {
           return item.name
         }).sort()
+        this.formData.datetime = item.dataTimeStr
+
+        if (item.resData) {
+          const resData = item.resData
+          this.formData.id = resData.id
+          resData.operatorOne.split(',').forEach(item => {
+            if (item) {
+              this.handleClose(item, this.zj_list, this.formData.lb1)
+            }
+          })
+          resData.operatorTwo.split(',').forEach(item => {
+            if (item) {
+              this.handleClose(item, this.zj_list, this.formData.lb2)
+            }
+          })
+          resData.operatorThree.split(',').forEach(item => {
+            if (item) {
+              this.handleClose(item, this.zj_list, this.formData.lb3)
+            }
+          })
+          resData.operatorDay.split(',').forEach(item => {
+            if (item) {
+              this.handleClose(item, this.zj_list, this.formData.lb4)
+            }
+          })
+          resData.technicianDay.split(',').forEach(item => {
+            if (item) {
+              this.handleClose(item, this.js_list, this.formData.bb)
+            }
+          })
+          resData.technicianNight.split(',').forEach(item => {
+            if (item) {
+              this.handleClose(item, this.js_list, this.formData.yb)
+            }
+          })
+          resData.technicianReady.split(',').forEach(item => {
+            if (item) {
+              this.handleClose(item, this.js_list, this.formData.ex)
+            }
+          })
+        }
       }).catch((error) => {
         this.$errorMsg(error || '接口调用失败，未知异常')
       })

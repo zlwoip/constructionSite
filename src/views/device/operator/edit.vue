@@ -73,8 +73,15 @@ export default {
       this.visible = true
     },
     hideView() {
-      this.$refs.formViewRef.resetFields()
       this.visible = false
+      this.formData = {
+        name: '',
+        imagePath: '',
+        type: '值机',
+        sex: '0',
+        telephone: '',
+        state: '1'
+      }
     },
     cancelView() {
       this.hideView()

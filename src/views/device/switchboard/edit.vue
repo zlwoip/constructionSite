@@ -80,7 +80,6 @@ export default {
       this.visible = true
     },
     hideView() {
-      this.$refs.formViewRef.resetFields()
       this.visible = false
     },
     cancelView() {

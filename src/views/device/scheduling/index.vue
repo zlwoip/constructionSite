@@ -24,32 +24,32 @@
         <div class="tbTitle">周日</div>
       </div>
       <div v-for="(weekArr,r) in showMonthCalender" :key="'r_'+r" class="tableRow">
-        <div v-for="(day,c) in weekArr" :key="'c_'+r+'_'+c" :class="day.cssClass" :style="{background:day.dataTimeStr<todayStr?'rgba(166, 204, 173, 0.5)':''}" @click="toEdit(day)">
+        <div v-for="(dayObj,c) in weekArr" :key="'c_'+r+'_'+c" :class="dayObj.cssClass" :style="{background:dayObj.dataTimeStr<todayStr?'rgba(166, 204, 173, 0.5)':''}" @click="toEdit(dayObj)">
           <div style="width:100%;height:96px;display:flex">
             <div class="left">
-              <div class="day">{{ day.day }}</div>
-              <div class="count">值机:<span>4</span></div>
-              <div class="count">技术:<span>8</span></div>
-              <div class="text-line" style="background-color: rgba(0,200,200,0.05);">
+              <div class="day">{{ dayObj.day }}</div>
+              <div v-if="dayObj.zjNum" class="count">值机:<span>{{ dayObj.zjNum }}</span></div>
+              <div v-if="dayObj.jsNum" class="count">技术:<span>{{ dayObj.jsNum }}</span></div>
+              <div v-if="dayObj.ex && dayObj.ex.length" class="text-line" style="background-color: rgba(0,200,200,0.05);">
                 <div class="label" style="background-color: rgba(0,0,0,0.5);color: #CDC0B0">备</div>
-                <div class="roll" title="于丽婷">丽婷</div>
+                <div class="roll" title="于丽婷">{{ dayObj.ex }}</div>
               </div>
             </div>
-            <div class="right">
-              <div class="text-line" style="background-color: rgba(200,0,0,0.05);">
+            <div v-if="dayObj.zjNum && dayObj.jsNum" class="right">
+              <div v-if="dayObj.lb && dayObj.lb.length" class="text-line" style="background-color: rgba(200,0,0,0.05);">
                 <div class="label" style="background-color: rgba(0,0,0,0.2);color: #434343">轮班</div>
-                <div class="roll" title="于丽婷、于丽婷、于丽婷">于丽婷 于丽婷 于丽婷</div>
+                <div class="roll" :title="dayObj.lb">{{ dayObj.lb }}</div>
               </div>
-              <div class="text-line" style="background-color: rgba(200,200,0,0.05);">
+              <div v-if="dayObj.bb && dayObj.bb.length" class="text-line" style="background-color: rgba(200,200,0,0.05);">
                 <div class="label" style="background-color: rgba(0,0,0,0.4);color: #e3e3e3">白班</div>
-                <div class="roll" title="于丽婷、于丽婷、于丽婷">于丽婷 于丽婷 于丽婷 于丽婷 于丽婷 于丽婷</div>
+                <div class="roll" :title="dayObj.bb">{{ dayObj.bb }}</div>
               </div>
-              <div class="text-line" style="background-color: rgba(0,0,200,0.05);">
+              <div v-if="dayObj.yb && dayObj.yb.length" class="text-line" style="background-color: rgba(0,0,200,0.05);">
                 <div class="label" style="background-color: rgba(0,0,0,0.6);color: #a3a3a3">夜班</div>
-                <div class="roll" title="于丽婷、于丽婷、于丽婷">于丽婷 于丽婷 于丽婷</div>
+                <div class="roll" :title="dayObj.yb">{{ dayObj.yb }}</div>
               </div>
             </div>
-<!--            <div class="right" style="text-align:center;padding-top:10px">当日无排班</div>-->
+            <div v-else class="right" style="text-align:center;padding-top:10px">当日无排班</div>
           </div>
         </div>
       </div>
@@ -60,6 +60,7 @@
 
 <script>
 import editPage from './edit'
+
 export default {
   components: { editPage },
   data() {
@@ -156,9 +157,57 @@ export default {
         }
         createCalender.push(weekTempArr)
       }
-      this.showMonthCalender = createCalender
-      // const startTime = createCalender[0][0].year + '-' + createCalender[0][0].month + '-' + createCalender[0][0].day
-      // const endTime = createCalender[5][6].year + '-' + createCalender[5][6].month + '-' + createCalender[5][6].day
+
+      this.$post({
+        url: this.$urlPath.showClassesList,
+        data: {
+          startDate: createCalender[0][0].year + '-' + createCalender[0][0].month + '-' + createCalender[0][0].day,
+          endDate: createCalender[5][6].year + '-' + createCalender[5][6].month + '-' + createCalender[5][6].day
+        }
+      }).then((res) => {
+        const classesList = res.classesList || []
+        for (let curRow = 0; curRow < 6; curRow++) {
+          for (let weekDay = 0; weekDay < 7; weekDay++) {
+            const dayObj = createCalender[curRow][weekDay]
+            for (let i = 0; i < classesList.length; i++) {
+              if (dayObj.dataTimeStr === classesList[i].datetime) {
+                dayObj.lb = [classesList[i].operatorOne, classesList[i].operatorTwo, classesList[i].operatorThree].join(',')
+                dayObj.bb = [classesList[i].operatorDay, classesList[i].technicianDay].join(',')
+                dayObj.yb = classesList[i].technicianNight
+                dayObj.ex = classesList[i].technicianReady
+                dayObj.zjNum = 0
+                if (classesList[i].operatorOne) {
+                  dayObj.zjNum += classesList[i].operatorOne.split(',').length
+                }
+                if (classesList[i].operatorTwo) {
+                  dayObj.zjNum += classesList[i].operatorTwo.split(',').length
+                }
+                if (classesList[i].operatorThree) {
+                  dayObj.zjNum += classesList[i].operatorThree.split(',').length
+                }
+                if (classesList[i].operatorDay) {
+                  dayObj.zjNum += classesList[i].operatorDay.split(',').length
+                }
+                dayObj.jsNum = 0
+                if (classesList[i].technicianDay) {
+                  dayObj.jsNum += classesList[i].technicianDay.split(',').length
+                }
+                if (classesList[i].technicianNight) {
+                  dayObj.jsNum += classesList[i].technicianNight.split(',').length
+                }
+                if (classesList[i].technicianReady) {
+                  dayObj.jsNum += classesList[i].technicianReady.split(',').length
+                }
+                dayObj.resData = classesList[i]
+                break
+              }
+            }
+          }
+        }
+        this.showMonthCalender = createCalender
+      }).catch((error) => {
+        this.$errorMsg(error || '接口调用失败，未知异常')
+      })
     },
     // 生成指定年，月的日历
     monthCalender(year, month) {

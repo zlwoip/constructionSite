@@ -663,6 +663,26 @@ export default {
         }
       })
       item.errorNum = errorNum
+      // 保存ups巡检结果以显示首页指标数据
+      const lastUPSResult = localStorage.getItem('lastUPSResult')
+      if (lastUPSResult) {
+        const lastUPSResultObj = JSON.parse(lastUPSResult)
+        localStorage.setItem('lastUPSResult', JSON.stringify({
+          dataNum: upsList[0].length + upsList[1].length + upsList[2].length,
+          errorNum: item.errorNum,
+          dateTime: item.dateTime,
+          signImg: item.signImg,
+          count: (Number(lastUPSResultObj.count) || 0) + 1
+        }))
+      } else {
+        localStorage.setItem('lastUPSResult', JSON.stringify({
+          dataNum: upsList[0].length + upsList[1].length + upsList[2].length,
+          errorNum: item.errorNum,
+          dateTime: item.dateTime,
+          signImg: item.signImg,
+          count: 1
+        }))
+      }
     },
     submitInspection(item) {
       const cloneObj = JSON.parse(JSON.stringify(item))
