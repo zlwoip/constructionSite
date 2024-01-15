@@ -32,7 +32,7 @@
               <div v-if="dayObj.jsNum" class="count">技术:<span>{{ dayObj.jsNum }}</span></div>
               <div v-if="dayObj.ex && dayObj.ex.length" class="text-line" style="background-color: rgba(0,200,200,0.05);">
                 <div class="label" style="background-color: rgba(0,0,0,0.5);color: #CDC0B0">备</div>
-                <div class="roll" title="于丽婷">{{ dayObj.ex }}</div>
+                <div class="roll" :title="dayObj.ex">{{ dayObj.ex }}</div>
               </div>
             </div>
             <div v-if="dayObj.zjNum && dayObj.jsNum" class="right">
