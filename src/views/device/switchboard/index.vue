@@ -128,12 +128,12 @@ export default {
       waterMark: '',
       dw_type: [
         { label: '市公司', value: '市公司' },
-        { label: '环翠分公司', value: '环翠分公司' },
-        { label: '高区分公司', value: '高区分公司' },
-        { label: '经区分公司', value: '经区分公司' },
-        { label: '文登分公司', value: '文登分公司' },
-        { label: '荣成分公司', value: '荣成分公司' },
-        { label: '乳山分公司', value: '乳山分公司' }
+        { label: '环翠区', value: '环翠区' },
+        { label: '高区', value: '高区' },
+        { label: '经区', value: '经区' },
+        { label: '文登', value: '文登' },
+        { label: '荣成', value: '荣成' },
+        { label: '乳山', value: '乳山' }
       ],
       loading: false,
       page: 1,

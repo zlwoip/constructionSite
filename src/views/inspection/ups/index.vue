@@ -135,7 +135,7 @@
               <div style="font-size: 16px;color: #999999">
                 <span style="font-size: 20px;font-weight: bold;color: black">{{ item.name }}</span>
                 <span v-if="item.status===1"> 等待巡检... </span>
-                <span v-if="item.status===2"> 正在巡检中 <i class="el-icon-loading"></i> </span>
+                <span v-if="item.status===2"> 正在巡检中，请稍后 <i class="el-icon-loading"></i> </span>
                 <span v-if="item.status===3"> 请<span style="font-weight:bold;color:#666">确认</span>后<span style="font-weight:bold;color:#666">提交</span>该报告！ </span>
                 <el-button v-if="item.status===1" type="primary" size="mini" icon="el-icon-video-play" style="float:right;margin:0 20px" @click="beginInspection(item)">开始巡检</el-button>
                 <el-button v-if="item.status===2" disabled size="mini" icon="el-icon-loading" style="float:right;margin:0 20px">巡检中...</el-button>
@@ -670,6 +670,8 @@ export default {
         localStorage.setItem('lastUPSResult', JSON.stringify({
           dataNum: upsList[0].length + upsList[1].length + upsList[2].length,
           errorNum: item.errorNum,
+          sdv: upsList[0].length + upsList[1].length + upsList[2].length - (Number(lastUPSResultObj.dataNum) || 0),
+          edv: item.errorNum - (Number(lastUPSResultObj.errorNum) || 0),
           dateTime: item.dateTime,
           signImg: item.signImg,
           count: (Number(lastUPSResultObj.count) || 0) + 1
@@ -678,11 +680,14 @@ export default {
         localStorage.setItem('lastUPSResult', JSON.stringify({
           dataNum: upsList[0].length + upsList[1].length + upsList[2].length,
           errorNum: item.errorNum,
+          sdv: upsList[0].length + upsList[1].length + upsList[2].length,
+          edv: item.errorNum,
           dateTime: item.dateTime,
           signImg: item.signImg,
           count: 1
         }))
       }
+      localStorage.setItem('lastUPSDataList', JSON.stringify([...upsList[0], ...upsList[1], ...upsList[2]]))
     },
     submitInspection(item) {
       const cloneObj = JSON.parse(JSON.stringify(item))

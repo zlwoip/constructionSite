@@ -5,22 +5,9 @@
       class="iconfont action-item"
       @click="onShowSearch"
     >&#xe62c;</span>
-    <el-popover
-      v-if="state.actionItem.showMessage"
-      class="action-item"
-      trigger="click"
-      @after-enter="onPopoverAfterEnter"
-    >
-      <el-badge
-        slot="reference"
-        :value="12"
-      >
-        <span class="iconfont action-item">&#xe646;</span>
-      </el-badge>
-      <MessageContent
-        ref="messageContent"
-        @clear-num="clearNum"
-      />
+    <el-popover v-if="state.actionItem.showMessage" class="action-item" trigger="click" @after-enter="onPopoverAfterEnter">
+      <el-badge slot="reference" :value="8"><span class="iconfont action-item">&#xe646;</span></el-badge>
+      <MessageContent ref="messageContent" @clear-num="clearNum"/>
     </el-popover>
     <span
       v-if="state.actionItem.showRefresh"

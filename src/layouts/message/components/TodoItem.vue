@@ -1,6 +1,6 @@
 <template>
   <div class="notify-container">
-    <div class="title text-cut">请下午三点半到大会议室开项目需求分析会，要求与会人员必须按时到场</div>
+    <div class="title text-cut" title="交换机发生异或常网管不上，请检查...">交换机发生异或常网管不上，请检查...</div>
     <div class="status">
       <el-tag
         type="primary"

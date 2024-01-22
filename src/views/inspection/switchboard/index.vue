@@ -249,6 +249,8 @@ export default {
             dataNum: this.dataNum,
             errorNum: this.errorNum,
             dateTime: this.dateTime,
+            sdv: this.dataNum - (Number(lastSBIResultObj.dataNum) || 0),
+            edv: this.errorNum - (Number(lastSBIResultObj.errorNum) || 0),
             count: (Number(lastSBIResultObj.count) || 0) + 1
           }))
         } else {
@@ -256,6 +258,8 @@ export default {
             dataNum: this.dataNum,
             errorNum: this.errorNum,
             dateTime: this.dateTime,
+            sdv: this.dataNum,
+            edv: this.errorNum,
             count: 1
           }))
         }

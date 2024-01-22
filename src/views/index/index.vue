@@ -1,27 +1,57 @@
 <template>
-  <div class="main-container">
+  <div class="main-container" style="height:100%;overflow-y: auto">
     <el-row :gutter="5">
       <el-col v-for="(item, index) of dataList" :key="index" :xs="24" :sm="12" :md="6" class="item-wrapper">
         <DataItem :data-model="item">
           <template v-if="index === 0" #extra="{ extra }">
             <div class="margin-top" style="height: 54px">
               <div class="text-gray">
-                巡检端口数：{{ extra.sum }}
+                巡检端口数:
+                <span class="d-value-text">{{ extra.sum }}</span>
+                <div class="d-value-line">
+                  <i class="el-icon-caret-top d-up" :style="{color:extra.sdv>0?'#6739b6':''}"></i>
+                  <i class="el-icon-caret-bottom d-down" :style="{color:extra.sdv<0?'#0081ff':''}"></i>
+                  <span :style="{color:extra.sdv>0?'#6739b6':extra.sdv<0?'#0081ff':''}">
+                    {{ extra.sdv>=0?`+${extra.sdv}`:`${extra.sdv}` }}
+                  </span>
+                </div>
               </div>
               <div class="text-gray margin-top-sm">
-                异常端口数：{{ extra.error }}
-                <i v-if="extra.isUp" class="el-icon-caret-top text-blue"></i>
+                异常端口数:
+                <span class="d-value-text">{{ extra.error }}</span>
+                <div class="d-value-line">
+                  <i class="el-icon-caret-top d-up" :style="{color:extra.edv>0?'#e54d42':''}"></i>
+                  <i class="el-icon-caret-bottom d-down" :style="{color:extra.edv<0?'#39b54a':''}"></i>
+                  <span :style="{color:extra.edv>0?'#e54d42':extra.edv<0?'#39b54a':''}">
+                    {{ extra.edv>=0?`+${extra.edv}`:`${extra.edv}` }}
+                  </span>
+                </div>
               </div>
             </div>
           </template>
           <template v-else-if="index === 1" #extra="{ extra }">
             <div class="margin-top" style="position: relative;height: 54px">
               <div class="text-gray">
-                巡检ups数：{{ extra.sum }}
+                巡检ups数:
+                <span class="d-value-text">{{ extra.sum }}</span>
+                <div class="d-value-line">
+                  <i class="el-icon-caret-top d-up" :style="{color:extra.sdv>0?'#6739b6':''}"></i>
+                  <i class="el-icon-caret-bottom d-down" :style="{color:extra.sdv<0?'#0081ff':''}"></i>
+                  <span :style="{color:extra.sdv>0?'#6739b6':extra.sdv<0?'#0081ff':''}">
+                    {{ extra.sdv>=0?`+${extra.sdv}`:`${extra.sdv}` }}
+                  </span>
+                </div>
               </div>
               <div class="text-gray margin-top-sm">
-                异常ups数：{{ extra.error }}
-                <i v-if="extra.isUp" class="el-icon-caret-top text-blue"></i>
+                异常ups数:
+                <span class="d-value-text">{{ extra.error }}</span>
+                <div class="d-value-line">
+                  <i class="el-icon-caret-top d-up" :style="{color:extra.edv>0?'#e54d42':''}"></i>
+                  <i class="el-icon-caret-bottom d-down" :style="{color:extra.edv<0?'#39b54a':''}"></i>
+                  <span :style="{color:extra.edv>0?'#e54d42':extra.edv<0?'#39b54a':''}">
+                    {{ extra.edv>=0?`+${extra.edv}`:`${extra.edv}` }}
+                  </span>
+                </div>
               </div>
               <div class="stack-avatar-wrapper">
                 <img :src="require(`@/assets/signImg/${extra.sign}.png`)" title="巡检员电子签名" style="height: 36px;margin-right: 30px" />
@@ -37,18 +67,39 @@
         </DataItem>
       </el-col>
     </el-row>
-
+    <el-row :gutter="5" class="margin-top-xs">
+      <el-col :xs="24" :sm="24" :md="6">
+        <div class="flex flex-direction">
+          <load-rate ref="loadRate" />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" class="map-margin-tb">
+        <div>
+          <map-view ref="mapView" />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="6">
+        <div class="flex flex-direction">
+          <sbi-scatter-chart ref="sbiScatterChart" />
+          <ups-scatter-chart ref="upsScatterChart" class="margin-top-xs" />
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
 import DataItem from './components/DataItem'
 import * as echarts from 'echarts'
+import LoadRate from './components/LoadRate'
+import UpsScatterChart from './components/UpsScatterChart'
+import SbiScatterChart from './components/SbiScatterChart'
+import MapView from './components/MapView'
 
 export default {
   name: 'Main',
   components: {
-    DataItem
+    DataItem, LoadRate, UpsScatterChart, SbiScatterChart, MapView
   },
   data() {
     return {
@@ -61,7 +112,8 @@ export default {
           extra: {
             sum: 0,
             error: 0,
-            isUp: false
+            sdv: 0,
+            edv: 0
           }
         },
         {
@@ -72,18 +124,19 @@ export default {
           extra: {
             sum: 0,
             error: 0,
-            isUp: false,
+            sdv: 0,
+            edv: 0,
             sign: 'signTemp'
           }
         },
         {
-          title: '今日当班值机员',
+          title: '值机轮班时刻表',
           data: '',
           bottomTitle: '当前坐班人',
           totalSum: ''
         },
         {
-          title: '近一周光功率报警统计',
+          title: '光功率周报警统计',
           data: '189次',
           bottomTitle: '今日发生报警',
           totalSum: '0次'
@@ -102,6 +155,8 @@ export default {
         this.dataList[0].data = lastSBIResultObj.dateTime.split(' ')[1]
         this.dataList[0].extra.sum = lastSBIResultObj.dataNum
         this.dataList[0].extra.error = lastSBIResultObj.errorNum
+        this.dataList[0].extra.sdv = lastSBIResultObj.sdv || 0
+        this.dataList[0].extra.edv = lastSBIResultObj.edv || 0
         this.dataList[0].totalSum = lastSBIResultObj.count + '次'
       }
       const lastUPSResult = localStorage.getItem('lastUPSResult')
@@ -110,6 +165,8 @@ export default {
         this.dataList[1].data = lastUPSResultObj.dateTime.split(' ')[1]
         this.dataList[1].extra.sum = lastUPSResultObj.dataNum
         this.dataList[1].extra.error = lastUPSResultObj.errorNum
+        this.dataList[1].extra.sdv = lastUPSResultObj.sdv || 0
+        this.dataList[1].extra.edv = lastUPSResultObj.edv || 0
         this.dataList[1].extra.sign = lastUPSResultObj.signImg
         this.dataList[1].totalSum = lastUPSResultObj.count + '次'
       }
@@ -131,6 +188,8 @@ export default {
     if (this.dataTimer) {
       clearInterval(this.dataTimer)
       this.dataTimer = null
+      this.operatorChart.dispose()
+      this.alarmChart.dispose()
     }
   },
   methods: {
@@ -166,7 +225,7 @@ export default {
               colors.push('#4169E1')
               workNames.push(names[i])
             } else {
-              colors.push('#CFCFCF')
+              colors.push('#BCBCBC')
             }
           }
           this.dataList[2].totalSum = workNames.join('、')
@@ -226,6 +285,9 @@ export default {
             },
             yAxis: {
               inverse: true, // y 轴数据翻转，该操作是为了保证项目一放在最上面，项目七在最下面
+              axisLabel: {
+                show: false
+              },
               axisTick: {
                 // 隐藏刻度
                 show: false
@@ -271,8 +333,19 @@ export default {
                 name: '持续时间',
                 type: 'bar',
                 stack: 'duration',
+                showBackground: true,
                 itemStyle: {
-                  color: '#fff'
+                  color: '#eee'
+                },
+                emphasis: {
+                  disabled: true
+                },
+                label: {
+                  show: true,
+                  position: 'right',
+                  fontSize: 9,
+                  formatter: '{b}',
+                  offset: [35, 0]
                 },
                 zlevel: -1,
                 z: 9,
@@ -316,18 +389,22 @@ export default {
           dataList.forEach(item => {
             sum += item.value
           })
-          this.dataList[3].data = sum + '次'
+          this.dataList[3].data = '+' + sum
           const option = {
             animation: false,
             tooltip: {
               trigger: 'axis',
+              formatter(params) {
+                if (params[0].data) {
+                  return `<div style="color:#909399;font-size:12px"><span style="color:#e54d42"> ${params[0].axisValue} </span> 当天共发生 <span style="color:#e54d42">${params[0].data}</span> 次光功率报警</div>`
+                }
+                return ''
+              },
               confine: true,
               axisPointer: {
-                type: 'line',
-                label: {
-                  backgroundColor: '#6a7985'
-                }
-              }
+                type: 'line'
+              },
+              borderColor: '#1cbbb4'
             },
             grid: {
               containLabel: false,
@@ -358,10 +435,10 @@ export default {
                 }),
                 type: 'line',
                 smooth: true,
+                symbol: 'none',
                 lineStyle: {
                   width: 0
                 },
-                showSymbol: false,
                 areaStyle: {
                   opacity: 0.8,
                   color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -389,6 +466,34 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.d-value-text {
+  color: #737373;
+  font-weight: bolder;
+}
+.d-value-line {
+  margin-left: 5px;
+  position: relative;
+  display: inline-block;
+  .d-up {
+    position: absolute;
+    top: -4px;
+    left: 0;
+  }
+  .d-down {
+    position: absolute;
+    top: 3px;
+    left: 0;
+  }
+  span {
+    padding-left: 20px;
+    font-size: 12px;
+    transform: scale(0.5);
+    opacity: 0.5;
+    span {
+      font-weight: bold;
+    }
+  }
+}
 .chart-item {
   background-color: #fff;
 }

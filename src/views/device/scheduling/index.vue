@@ -35,7 +35,7 @@
                 <div class="roll" :title="dayObj.ex">{{ dayObj.ex }}</div>
               </div>
             </div>
-            <div v-if="dayObj.zjNum && dayObj.jsNum" class="right">
+            <div v-if="dayObj.zjNum || dayObj.jsNum" class="right">
               <div v-if="dayObj.lb && dayObj.lb.length" class="text-line" style="background-color: rgba(200,0,0,0.05);">
                 <div class="label" style="background-color: rgba(0,0,0,0.2);color: #434343">轮班</div>
                 <div class="roll" :title="dayObj.lb">{{ dayObj.lb }}</div>
@@ -147,6 +147,9 @@ export default {
               }
               dayObj.day = nextDay
               nextDay++
+            }
+            if (weekDay >= 6) {
+              dayObj.cssClass += ' weekend'
             }
           }
           dayObj.month = ('0' + dayObj.month).substr(-2)
@@ -416,6 +419,7 @@ export default {
 .tableCell:hover {
   color: rgb(255, 255, 255) !important;
   background: rgba(234, 153, 30, 0.5) !important;
+  opacity: 1 !important;
 }
 
 .tbTitle {
@@ -452,14 +456,25 @@ export default {
 }
 
 .prev, .next {
-  color: rgb(120, 121, 120, 0.7);
+  //color: rgb(120, 121, 120, 0.7);
   //background-color: rgb(234, 153, 30, 0.1);
+  opacity: 0.4;
 }
 
 .curDay {
   background: rgba(166, 204, 173, 0.9);
   .left {
     color: green;
+  }
+}
+.weekend {
+  .day {
+    color: rgba(139, 26, 26, 0.7) !important;
+  }
+}
+.weekend:hover {
+  .day {
+    color: rgb(255, 255, 255) !important;
   }
 }
 
