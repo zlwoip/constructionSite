@@ -69,7 +69,7 @@ export default {
         receiveOpticalOid: '',
         outputOpticalOid: '',
         upperAlarmValue: '',
-        lowerAlarmValue: '',
+        lowerAlarmValue: '-30',
         switchIP: ''
       },
       switchObj: {},
@@ -140,7 +140,7 @@ export default {
           receiveOpticalOid: '',
           outputOpticalOid: '',
           upperAlarmValue: '',
-          lowerAlarmValue: ''
+          lowerAlarmValue: '-30'
         }
         this.title = '新增端口'
       }

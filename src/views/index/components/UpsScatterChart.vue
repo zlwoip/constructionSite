@@ -28,6 +28,9 @@ export default {
     this.timeList = [start, end]
     this.$nextTick(() => {
       this.myChart = echarts.init(document.getElementById('upsScatterChart'))
+      window.addEventListener('resize', () => {
+        this.myChart.resize()
+      })
       this.$post({
         url: this.$urlPath.ShowInspectionPersonList
       }).then((res) => {

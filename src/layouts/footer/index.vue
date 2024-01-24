@@ -3,7 +3,7 @@
     Copyright <i
       class="iconfont"
       style="margin: 0 5px"
-    >&#xe619;</i> SHANDONG CABLE TV
+    >&#xe619;</i> WeiHai Cable TV
   </div>
 </template>
 

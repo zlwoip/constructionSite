@@ -24,6 +24,9 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.myChart = echarts.init(document.getElementById('loadRateChart'))
+      window.addEventListener('resize', () => {
+        this.myChart.resize()
+      })
       let dataArr = []
       const lastUPSDataList = localStorage.getItem('lastUPSDataList')
       if (lastUPSDataList) {

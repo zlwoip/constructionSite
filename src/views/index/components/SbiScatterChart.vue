@@ -23,6 +23,9 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.myChart = echarts.init(document.getElementById('sbiScatterChart'))
+      window.addEventListener('resize', () => {
+        this.myChart.resize()
+      })
       this.$post({
         url: this.$urlPath.ShowSwitchDeviceList
       }).then((res) => {

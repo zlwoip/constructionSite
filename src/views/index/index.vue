@@ -68,20 +68,16 @@
       </el-col>
     </el-row>
     <el-row :gutter="5" class="margin-top-xs">
-      <el-col :xs="24" :sm="24" :md="6">
-        <div class="flex flex-direction">
-          <load-rate ref="loadRate" />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="12" class="map-margin-tb">
+      <el-col :xs="24" :sm="24" :md="18" class="map-margin-tb">
         <div>
           <map-view ref="mapView" />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :md="6">
         <div class="flex flex-direction">
-          <sbi-scatter-chart ref="sbiScatterChart" />
-          <ups-scatter-chart ref="upsScatterChart" class="margin-top-xs" />
+          <ups-scatter-chart ref="upsScatterChart" />
+          <load-rate ref="loadRate" class="margin-top-xs" />
+          <sbi-scatter-chart ref="sbiScatterChart" class="margin-top-xs" />
         </div>
       </el-col>
     </el-row>
