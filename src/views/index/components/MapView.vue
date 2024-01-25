@@ -106,9 +106,8 @@ export default {
   name: 'MapView',
   data() {
     return {
-      mapCenter: [122.08438, 37.43255],
-      centerSite: [122.07887, 37.45754],
-      altitude: 50,
+      mapCenter: [122.09210, 37.46498],
+      centerSite: [122.09896, 37.49856], // [122.07887, 37.45754],
       mapDom: null,
       currentFeature: null,
       globalBorder: null,
@@ -124,7 +123,7 @@ export default {
     const now = new Date()
     const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59)
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    start.setTime(start.getTime() - 3600 * 1000 * 24)
+    start.setTime(start.getTime() - 3600 * 1000 * 48)
     this.timeList = [start, end]
     this.$nextTick(() => {
       this.initMapTalk()
@@ -166,6 +165,23 @@ export default {
       })
     },
     initMapTalk() {
+      const baseTitle = new maptalks.TileLayer('baseTitle', {
+        subdomains: ['01', '02', '03', '04'],
+        cssFilter: 'sepia(75%) invert(90%) grayscale(100%)',
+        visible: false,
+        forceRenderOnMoving: true,
+        forceRenderOnZooming: true,
+        forceRenderOnRotating: true
+      })
+      baseTitle.getTileUrl = (a, b, c) => {
+        const flag = '00000000'
+        const z = 'L' + c
+        const xx = a.toString(16)
+        const x = 'C' + flag.substring(0, 8 - xx.length) + xx
+        const yy = b.toString(16)
+        const y = 'R' + flag.substring(0, 8 - yy.length) + yy
+        return 'http://10.253.183.170/gismap/alllayers/' + z + '/' + y + '/' + x + '.png'
+      }
       this.mapDom = new maptalks.Map('mapDom', {
         center: this.mapCenter,
         zoom: 12.6,
@@ -177,16 +193,7 @@ export default {
         attribution: false,
         baseLayer: new maptalks.VectorLayer('baseVector'),
         layers: [
-          new maptalks.TileLayer('baseTitle', {
-            // urlTemplate: 'http://wprd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&z={z}&x={x}&y={y}&scl=2&style=6',
-            urlTemplate: 'http://webst{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
-            subdomains: ['01', '02', '03', '04'],
-            cssFilter: 'sepia(75%) invert(90%)',
-            visible: false,
-            forceRenderOnMoving: true,
-            forceRenderOnZooming: true,
-            forceRenderOnRotating: true
-          }),
+          baseTitle,
           new maptalks.VectorLayer('regionBorder', {
             forceRenderOnMoving: true,
             forceRenderOnZooming: true,
@@ -267,7 +274,7 @@ export default {
           textPlacement: 'vertex'
         },
         properties: {
-          altitude: -this.altitude * 25,
+          altitude: -70,
           id: properties.id,
           properties: properties
         }
@@ -444,7 +451,7 @@ export default {
           minZoom: 6,
           maxZoom: 14,
           width: 30,
-          height: Math.ceil(120 * (Math.random() * 0.9 + 0.15)),
+          height: Math.ceil(80 * (Math.random() * 0.8 + 0.2)),
           color: '#6495ED'
         }, threeLayer))
       }
@@ -467,7 +474,7 @@ export default {
       const infoObj = this.tableData[this.carouselIndex % this.tableData.length]
       this.carouselIndex++
       const infoDom = document.getElementById('info')
-      infoDom.innerHTML = `${infoObj.datetime} <span style="color:#d3d3d3"> 设备IP: </span> ${infoObj.machine} <span style="color:#d3d3d3"> 发生 </span> ${infoObj.description}`
+      infoDom.innerHTML = `${infoObj.datetime} <span style="color:#d3d3d3"> 设备IP: </span> ${infoObj.machine} <span style="color:#d3d3d3"> 发生了 </span> ${infoObj.description}`
     }
   }
 }
@@ -495,11 +502,11 @@ export default {
   left: 0;
   top: 0;
   width: 100%;
-  height: 13px;
+  height: 16px;
   overflow: hidden;
   text-align: center;
-  font: 13px bold sans-serif;
-  line-height: 13px;
+  font: 16px bold sans-serif;
+  line-height: 16px;
   color: #fff;
 }
 </style>
