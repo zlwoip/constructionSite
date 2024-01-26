@@ -106,7 +106,7 @@ export default {
   name: 'MapView',
   data() {
     return {
-      mapCenter: [122.09210, 37.46498],
+      mapCenter: [122.11995, 37.37913],
       centerSite: [122.09896, 37.49856], // [122.07887, 37.45754],
       mapDom: null,
       currentFeature: null,
@@ -184,11 +184,11 @@ export default {
       }
       this.mapDom = new maptalks.Map('mapDom', {
         center: this.mapCenter,
-        zoom: 12.6,
+        zoom: 11.8,
         spatialReference: {
           projection: 'EPSG:3857'
         },
-        pitch: 41.6,
+        pitch: 43,
         dragRotate: false,
         attribution: false,
         baseLayer: new maptalks.VectorLayer('baseVector'),
@@ -321,16 +321,29 @@ export default {
           coords: [geoCoord, this.centerSite]
         })
       }
+
+      let upsArr = []
+      const lastUPSDataList = localStorage.getItem('lastUPSDataList')
+      if (lastUPSDataList) {
+        const lastUPSDataListArr = JSON.parse(lastUPSDataList)
+        upsArr = lastUPSDataListArr.filter(item => {
+          return item.coords && item.coords.length && item.coords[0] && item.coords[1]
+        })
+        upsArr.forEach(item => {
+          item.value = item.coords.concat(10)
+        })
+      }
+
       const option = {
         tooltip: {
           trigger: 'item',
           formatter(params) {
             if (params.data) {
-              return `<div style="color:#909399;font-size:12px"><span style="color:#e54d42"> ${params.name} </span> 中心机房</div>`
+              return `<div style="color:#909399;font-size:12px"><span style="color:#e54d42"> ${params.name} </span> 虚拟中继点</div>`
             }
             return ''
           },
-          borderColor: '#dc143c'
+          borderColor: '#ffa022'
         },
         series: [
           {
@@ -338,7 +351,7 @@ export default {
             type: 'effectScatter',
             coordinateSystem: 'geo',
             data: [{
-              name: '市公司机房',
+              name: '中心机房',
               value: this.centerSite.concat(46)
             }],
             symbolSize: 15,
@@ -348,24 +361,36 @@ export default {
             },
             label: {
               formatter: '{b}',
-              distance: 12,
-              fontSize: 14,
-              position: 'right',
+              distance: 24,
+              fontSize: 16,
+              position: 'top',
+              backgroundColor: 'rgba(0,23,11,0.8)',
+              color: '#FFF8DC',
+              borderRadius: 8,
+              borderColor: '#ffa022',
+              borderWidth: 1,
+              padding: [4, 8, 2, 8],
+              show: true
+            },
+            labelLine: {
               show: true
             },
             itemStyle: {
-              color: '#dc143c'
+              color: '#ffa022'
+            },
+            emphasis: {
+              scale: false
             },
             tooltip: {
               formatter(params) {
                 if (params.data) {
-                  return `<div style="color:#909399;font-size:12px">中心机房网管在线 <span style="color:#e54d42"> ${params.value[2]} </span></div>`
+                  return `<div style="color:#909399;font-size:12px">中心机房网管在线 <span style="color:#e54d42"> ${params.value[2]} </span> 台</div>`
                 }
                 return ''
               },
-              borderColor: '#dc143c'
+              borderColor: '#ffa022'
             },
-            zlevel: 3
+            zlevel: 4
           },
           {
             name: 'porSite',
@@ -375,8 +400,8 @@ export default {
             symbolSize: 5,
             label: {
               formatter: '{b}',
-              position: 'right',
-              show: true
+              position: 'bottom',
+              show: false
             },
             itemStyle: {
               color: 'rgba(100,149,237,0.7)'
@@ -388,7 +413,7 @@ export default {
               color: 'rgba(25,25,112,0.9)',
               brushType: 'fill'
             },
-            zlevel: 2
+            zlevel: 3
           },
           {
             name: 'porLine',
@@ -402,7 +427,7 @@ export default {
             },
             lineStyle: {
               normal: {
-                color: '#e54d42',
+                color: '#ffa022',
                 width: 1,
                 opacity: 0.03,
                 curveness: 0.4
@@ -412,6 +437,52 @@ export default {
               show: false
             },
             data: dataArr,
+            zlevel: 2
+          },
+          {
+            name: 'upsSite',
+            type: 'effectScatter',
+            coordinateSystem: 'geo',
+            data: upsArr,
+            symbolSize: 3,
+            label: {
+              formatter: '{b}',
+              distance: 10,
+              fontSize: 10,
+              position: 'top',
+              backgroundColor: 'rgba(0,23,11,0.8)',
+              color: '#E3E3E3',
+              borderRadius: 8,
+              borderColor: '#FFDEAD',
+              borderWidth: 1,
+              padding: [3, 6, 1, 6],
+              show: true
+            },
+            labelLine: {
+              show: true
+            },
+            itemStyle: {
+              color: '#FFDEAD'
+            },
+            emphasis: {
+              scale: false
+            },
+            tooltip: {
+              formatter(params) {
+                if (params.data) {
+                  return `<div style="color:#909399;font-size:12px">
+                            工作状态-<span style="color:#39b54a">正常</span> <br>
+                            IP: ${params.data.ip} <br>
+                            温度：<span style="color:#e54d42"> ${params.data.heat} </span> ℃<br>
+                            负载：<span style="color:#e54d42"> ${params.data.load} </span> %<br>
+                            输入：<span style="color:#e54d42"> ${params.data.input} </span> V<br>
+                            输出：<span style="color:#e54d42"> ${params.data.output} </span> V<br>
+                           </div>`
+                }
+                return ''
+              },
+              borderColor: '#ffa022'
+            },
             zlevel: 1
           }
         ]
@@ -451,7 +522,7 @@ export default {
           minZoom: 6,
           maxZoom: 14,
           width: 30,
-          height: Math.ceil(80 * (Math.random() * 0.8 + 0.2)),
+          height: Math.ceil(70 * Math.random()) + 30,
           color: '#6495ED'
         }, threeLayer))
       }

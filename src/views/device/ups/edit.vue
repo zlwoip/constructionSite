@@ -33,6 +33,11 @@
           </el-select>
         </div>
       </el-form-item>
+      <el-form-item label="位置坐标：" class="form-cell" prop="position">
+        <div class="cell-box">
+          <el-input v-model="formData.position" size="mini" placeholder="单行文本输入" class="cell-input" />
+        </div>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer" style="text-align: center">
       <el-button size="mini" @click="cancelView">取消</el-button>
@@ -66,7 +71,8 @@ export default {
         upsIP: '',
         branch: '',
         upsLevel: '',
-        upsType: ''
+        upsType: '',
+        position: ''
       },
       rules: {
         upsName: { required: true, message: '请填写电源名称', trigger: 'blur' },
@@ -122,7 +128,8 @@ export default {
           upsIP: '',
           branch: '',
           upsLevel: '',
-          upsType: ''
+          upsType: '',
+          position: ''
         }
         this.title = 'ups信息录入'
       }

@@ -748,6 +748,7 @@ export default {
           this.nodelist0.push({
             name: node.upsName,
             ip: node.upsIP,
+            coords: node.position ? [Number(node.position.split(',')[0]) || 0, Number(node.position.split(',')[1]) || 0] : undefined,
             heat: '',
             inputA: '',
             inputB: '',
@@ -773,6 +774,7 @@ export default {
             const tempObj = {
               name: node.upsName,
               ip: node.upsIP,
+              coords: node.position ? [Number(node.position.split(',')[0]) || 0, Number(node.position.split(',')[1]) || 0] : undefined,
               org: node.branch,
               heat: '',
               input: '',
@@ -793,6 +795,7 @@ export default {
             const tempObj = {
               name: node.upsName,
               ip: node.upsIP,
+              coords: node.position ? [Number(node.position.split(',')[0]) || 0, Number(node.position.split(',')[1]) || 0] : undefined,
               org: node.branch,
               heat: '',
               input: '',
