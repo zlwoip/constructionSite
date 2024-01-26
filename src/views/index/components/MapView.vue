@@ -106,7 +106,7 @@ export default {
   name: 'MapView',
   data() {
     return {
-      mapCenter: [122.11995, 37.37913],
+      mapCenter: [122.12456, 37.40352],
       centerSite: [122.09896, 37.49856], // [122.07887, 37.45754],
       mapDom: null,
       currentFeature: null,
@@ -184,11 +184,11 @@ export default {
       }
       this.mapDom = new maptalks.Map('mapDom', {
         center: this.mapCenter,
-        zoom: 11.8,
+        zoom: 11.4,
         spatialReference: {
           projection: 'EPSG:3857'
         },
-        pitch: 43,
+        pitch: 30,
         dragRotate: false,
         attribution: false,
         baseLayer: new maptalks.VectorLayer('baseVector'),
@@ -322,7 +322,7 @@ export default {
         })
       }
 
-      let upsArr = []
+      let upsArr = []; const upsNormalArr = []; const upsErrorArr = []
       const lastUPSDataList = localStorage.getItem('lastUPSDataList')
       if (lastUPSDataList) {
         const lastUPSDataListArr = JSON.parse(lastUPSDataList)
@@ -331,6 +331,11 @@ export default {
         })
         upsArr.forEach(item => {
           item.value = item.coords.concat(10)
+          if (item.vh || item.vl || item.vi || item.vo) {
+            upsErrorArr.push(item)
+          } else {
+            upsNormalArr.push(item)
+          }
         })
       }
 
@@ -339,7 +344,7 @@ export default {
           trigger: 'item',
           formatter(params) {
             if (params.data) {
-              return `<div style="color:#909399;font-size:12px"><span style="color:#e54d42"> ${params.name} </span> 虚拟中继点</div>`
+              return `<div style="color:#909399;font-size:12px"><span style="color:#e54d42"> ${params.name} </span> 中继点</div>`
             }
             return ''
           },
@@ -413,7 +418,7 @@ export default {
               color: 'rgba(25,25,112,0.9)',
               brushType: 'fill'
             },
-            zlevel: 3
+            zlevel: 2
           },
           {
             name: 'porLine',
@@ -437,13 +442,13 @@ export default {
               show: false
             },
             data: dataArr,
-            zlevel: 2
+            zlevel: 1
           },
           {
-            name: 'upsSite',
+            name: 'upsNorma',
             type: 'effectScatter',
             coordinateSystem: 'geo',
-            data: upsArr,
+            data: upsNormalArr,
             symbolSize: 3,
             label: {
               formatter: '{b}',
@@ -467,23 +472,83 @@ export default {
             emphasis: {
               scale: false
             },
+            rippleEffect: {
+              scale: 5,
+              number: 2,
+              period: 3,
+              color: 'rgba(255,222,173,0.8)',
+              brushType: 'fill'
+            },
             tooltip: {
               formatter(params) {
                 if (params.data) {
                   return `<div style="color:#909399;font-size:12px">
                             工作状态-<span style="color:#39b54a">正常</span> <br>
                             IP: ${params.data.ip} <br>
-                            温度：<span style="color:#e54d42"> ${params.data.heat} </span> ℃<br>
-                            负载：<span style="color:#e54d42"> ${params.data.load} </span> %<br>
-                            输入：<span style="color:#e54d42"> ${params.data.input} </span> V<br>
-                            输出：<span style="color:#e54d42"> ${params.data.output} </span> V<br>
+                            温度：<span style="color:#39b54a"> ${params.data.heat} </span> ℃<br>
+                            负载：<span style="color:#39b54a"> ${params.data.load} </span> %<br>
+                            输入：<span style="color:#39b54a"> ${params.data.input} </span> V<br>
+                            输出：<span style="color:#39b54a"> ${params.data.output} </span> V<br>
                            </div>`
                 }
                 return ''
               },
               borderColor: '#ffa022'
             },
-            zlevel: 1
+            zlevel: 3
+          },
+          {
+            name: 'upsError',
+            type: 'effectScatter',
+            coordinateSystem: 'geo',
+            data: upsErrorArr,
+            symbolSize: 3,
+            label: {
+              formatter: '{b}',
+              distance: 10,
+              fontSize: 10,
+              position: 'top',
+              backgroundColor: 'rgba(0,23,11,0.8)',
+              color: '#E3E3E3',
+              borderRadius: 8,
+              borderColor: '#e54d42',
+              borderWidth: 1,
+              padding: [3, 6, 1, 6],
+              show: true
+            },
+            labelLine: {
+              show: true
+            },
+            itemStyle: {
+              color: '#e54d42'
+            },
+            rippleEffect: {
+              scale: 7,
+              number: 2,
+              period: 3,
+              color: 'rgba(255,48,48,0.8)',
+              brushType: 'fill'
+            },
+            emphasis: {
+              scale: false
+            },
+            tooltip: {
+              formatter(params) {
+                if (params.data) {
+                  return `<div style="color:#909399;font-size:12px">
+                            工作状态-<span style="color:#e54d42">异常</span> <br>
+                            IP: ${params.data.ip} <br>
+                            温度：<span style="color:${params.data.vh ? '#e54d42' : '#39b54a'}"> ${params.data.heat} </span> ℃<br>
+                            负载：<span style="color:${params.data.vl ? '#e54d42' : '#39b54a'}"> ${params.data.load} </span> %<br>
+                            输入：<span style="color:${params.data.vi ? '#e54d42' : '#39b54a'}"> ${params.data.input} </span> V<br>
+                            输出：<span style="color:${params.data.vo ? '#e54d42' : '#39b54a'}"> ${params.data.output} </span> V<br>
+                           </div>`
+                }
+                return ''
+              },
+              borderColor: '#ffa022'
+            },
+            zlevel: 3
           }
         ]
       }
@@ -520,7 +585,7 @@ export default {
         const Coordinate = this.geoCoordMap[key]
         threeLayer.addMesh(new LightPillar(new maptalks.Coordinate(Coordinate), {
           minZoom: 6,
-          maxZoom: 14,
+          maxZoom: 12,
           width: 30,
           height: Math.ceil(70 * Math.random()) + 30,
           color: '#6495ED'
