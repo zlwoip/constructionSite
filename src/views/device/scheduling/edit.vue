@@ -1,13 +1,13 @@
 <template>
   <!-- 表单渲染 -->
   <el-dialog append-to-body :close-on-click-modal="false" :before-close="cancelView" :visible="visible" width="580px">
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-click="tabsHandleClick">
       <el-tab-pane label="值机排班" name="zj">
         <el-descriptions class="margin-top" :column="1" size="small" border :label-style="{width:'160px'}" :content-style="{position:'relative',paddingRight:'22px'}">
           <el-descriptions-item>
             <template slot="label">
               <i class="el-icon-stopwatch" style="transform: rotate(-50deg)"></i>
-              轮班（23:00~07:00）
+              轮班（07:00~15:00）
             </template>
             <el-tag v-for="item in formData.lb1" :key="'lb'+item" size="mini" type="primary" class="tag-label" closable @close="handleClose(item, formData.lb1, zj_list)">
               {{ item }}
@@ -20,7 +20,7 @@
           <el-descriptions-item>
             <template slot="label">
               <i class="el-icon-stopwatch" style="transform: rotate(180deg)"></i>
-              轮班（07:00~15:00）
+              轮班（15:00~23:00）
             </template>
             <el-tag v-for="item in formData.lb2" :key="'lb'+item" size="mini" type="primary" class="tag-label" closable @close="handleClose(item, formData.lb2, zj_list)">
               {{ item }}
@@ -33,7 +33,7 @@
           <el-descriptions-item>
             <template slot="label">
               <i class="el-icon-stopwatch" style="transform: rotate(60deg)"></i>
-              轮班（15:00~23:00）
+              轮班（23:00~07:00）
             </template>
             <el-tag v-for="item in formData.lb3" :key="'lb'+item" size="mini" type="primary" class="tag-label" closable @close="handleClose(item, formData.lb3, zj_list)">
               {{ item }}
@@ -107,12 +107,25 @@
       <el-button size="mini" type="primary" @click="submitForm()">保存</el-button>
     </div>
     <el-dialog append-to-body :close-on-click-modal="false" :before-close="cancelNameListView" :visible="viewVisible" width="300px">
-      <div v-for="(item, index) in nameList" :key="'nl'+index" class="name-list">
-        <el-button size="mini" style="width: 200px;margin: 1px" @click="insertRoll(item)">
-          <i class="el-icon-user" style="float: left"></i>
-          {{ item }}
-        </el-button>
-      </div>
+      <el-tabs v-model="nameListActive">
+        <el-tab-pane label="值机员" name="zj">
+          <div v-for="(item, index) in zj_list" :key="'znl'+index" class="name-list">
+            <el-button size="mini" style="width: 200px;margin: 1px" @click="insertRoll(item)">
+              <i class="el-icon-user" style="float: left"></i>
+              {{ item }}
+            </el-button>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="技术员" name="js">
+          <div v-for="(item, index) in js_list" :key="'jnl'+index" class="name-list">
+            <el-button size="mini" style="width: 200px;margin: 1px" @click="insertRoll(item)">
+              <i class="el-icon-user" style="float: left"></i>
+              {{ item }}
+            </el-button>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+
     </el-dialog>
   </el-dialog>
 </template>
@@ -127,6 +140,7 @@ export default {
       js_list: [],
       title: '',
       activeName: 'zj',
+      nameListActive: 'zj',
       nameList: [],
       indicator: '',
       formData: {
@@ -146,6 +160,9 @@ export default {
   mounted() {
   },
   methods: {
+    tabsHandleClick(tab) {
+      this.nameListActive = tab.name
+    },
     showNameList(nameList, indicator) {
       this.nameList = nameList
       this.indicator = indicator
@@ -158,17 +175,17 @@ export default {
     },
     insertRoll(item) {
       this.formData[this.indicator].push(item)
-      this.formData[this.indicator].forEach(item => {
-        if (this.nameList.indexOf(item) >= 0) {
-          this.nameList.splice(this.nameList.indexOf(item), 1)
-        }
-      })
+      // this.formData[this.indicator].forEach(item => {
+      //   if (this.nameList.indexOf(item) >= 0) {
+      //     this.nameList.splice(this.nameList.indexOf(item), 1)
+      //   }
+      // })
       this.cancelNameListView()
     },
     handleClose(item, dArr, aArr) {
       dArr.splice(dArr.indexOf(item), 1)
-      aArr.push(item)
-      aArr.sort()
+      // aArr.push(item)
+      // aArr.sort()
     },
     showView() {
       this.visible = true
@@ -205,9 +222,10 @@ export default {
           id: this.formData.id
         }
       }).then((res) => {
+        const d = new Date(this.formData.datetime.replace(/-/, '/'))
+        this.$parent.updateWebPage(d.getFullYear(), d.getMonth() + 1)
         this.$successMsg(res.msg)
         this.cancelView()
-        this.$parent.updateWebPage()
       }).catch((error) => {
         this.$errorMsg(error || '接口调用失败，未知异常')
       })
@@ -235,37 +253,37 @@ export default {
           this.formData.id = resData.id
           resData.operatorOne.split(',').forEach(item => {
             if (item) {
-              this.handleClose(item, this.zj_list, this.formData.lb1)
+              this.formData.lb1.push(item)
             }
           })
           resData.operatorTwo.split(',').forEach(item => {
             if (item) {
-              this.handleClose(item, this.zj_list, this.formData.lb2)
+              this.formData.lb2.push(item)
             }
           })
           resData.operatorThree.split(',').forEach(item => {
             if (item) {
-              this.handleClose(item, this.zj_list, this.formData.lb3)
+              this.formData.lb3.push(item)
             }
           })
           resData.operatorDay.split(',').forEach(item => {
             if (item) {
-              this.handleClose(item, this.zj_list, this.formData.lb4)
+              this.formData.lb4.push(item)
             }
           })
           resData.technicianDay.split(',').forEach(item => {
             if (item) {
-              this.handleClose(item, this.js_list, this.formData.bb)
+              this.formData.bb.push(item)
             }
           })
           resData.technicianNight.split(',').forEach(item => {
             if (item) {
-              this.handleClose(item, this.js_list, this.formData.yb)
+              this.formData.yb.push(item)
             }
           })
           resData.technicianReady.split(',').forEach(item => {
             if (item) {
-              this.handleClose(item, this.js_list, this.formData.ex)
+              this.formData.ex.push(item)
             }
           })
         }

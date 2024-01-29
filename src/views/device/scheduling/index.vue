@@ -248,6 +248,7 @@ export default {
     },
     // 更新页面的数据
     updateWebPage(year, month) {
+      console.log(year, month)
       if (year === undefined || year === null) {
         year = new Date().getFullYear()
         month = new Date().getMonth() + 1

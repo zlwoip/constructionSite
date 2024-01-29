@@ -212,8 +212,8 @@ export default {
           if (now.getHours() >= 23) { // 当天超过23点算进入下一天
             today.setTime(today.getTime() + 3600000 * 24)
           }
-          const beginList = [today.getTime() - 3600000, today.getTime() + 3600000 * 7, today.getTime() + 3600000 * 15, today.getTime() + 3600000 * 8.5]
-          const endList = [today.getTime() + 3600000 * 7, today.getTime() + 3600000 * 15, today.getTime() + 3600000 * 23, today.getTime() + 3600000 * 17]
+          const beginList = [today.getTime() + 3600000 * 7, today.getTime() + 3600000 * 15, today.getTime() + 3600000 * 23, today.getTime() + 3600000 * 8.5]
+          const endList = [today.getTime() + 3600000 * 15, today.getTime() + 3600000 * 23, today.getTime() + 3600000 * 31, today.getTime() + 3600000 * 17]
           const colors = []
           const workNames = []
           for (let i = 0; i < 4; i++) {
@@ -263,6 +263,12 @@ export default {
             xAxis: {
               type: 'time',
               position: 'top',
+              min: function (value) {
+                return value.min - 1800000
+              },
+              max: function (value) {
+                return value.max + 1800000
+              },
               axisLabel: {
                 margin: 0
               },

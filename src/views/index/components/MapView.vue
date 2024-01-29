@@ -123,16 +123,12 @@ export default {
     const now = new Date()
     const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59)
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    start.setTime(start.getTime() - 3600 * 1000 * 48)
     this.timeList = [start, end]
     this.$nextTick(() => {
       this.initMapTalk()
       this.initBorderData()
       this.initRegionData()
       this.drawE3LayerDataToGlobal()
-      setTimeout(() => {
-        this.drawThreeLayerData()
-      }, 1500)
       this.loadData()
     })
   },
@@ -160,7 +156,7 @@ export default {
             this.setCarouselInfo()
           }, 1000 * 5)
         } else {
-          infoDom.innerHTML = `当前无报警设备，所有网管设备正常`
+          infoDom.innerHTML = `今日暂无光功率设备报警！`
         }
       })
     },
@@ -309,20 +305,7 @@ export default {
       this.mapDom.getLayer('regionPolygon').addGeometry(this.regionPolygons)
     },
     drawE3LayerDataToGlobal() {
-      const provinceData = []
-      const dataArr = []
-      for (const key in this.geoCoordMap) {
-        const geoCoord = this.geoCoordMap[key]
-        provinceData.push({
-          name: key,
-          value: geoCoord.concat(10)
-        })
-        dataArr.push({
-          coords: [geoCoord, this.centerSite]
-        })
-      }
-
-      let upsArr = []; const upsNormalArr = []; const upsErrorArr = []
+      const dataArr = []; let upsArr = []; const upsNormalArr = []; const upsErrorArr = []
       const lastUPSDataList = localStorage.getItem('lastUPSDataList')
       if (lastUPSDataList) {
         const lastUPSDataListArr = JSON.parse(lastUPSDataList)
@@ -330,6 +313,9 @@ export default {
           return item.coords && item.coords.length && item.coords[0] && item.coords[1]
         })
         upsArr.forEach(item => {
+          dataArr.push({
+            coords: [item.coords, this.centerSite]
+          })
           item.value = item.coords.concat(10)
           if (item.vh || item.vl || item.vi || item.vo) {
             upsErrorArr.push(item)
@@ -344,7 +330,7 @@ export default {
           trigger: 'item',
           formatter(params) {
             if (params.data) {
-              return `<div style="color:#909399;font-size:12px"><span style="color:#e54d42"> ${params.name} </span> 中继点</div>`
+              return `<div style="color:#909399;font-size:12px"><span style="color:#e54d42"> ${params.name} </span> 数据中继点</div>`
             }
             return ''
           },
@@ -398,29 +384,6 @@ export default {
             zlevel: 4
           },
           {
-            name: 'porSite',
-            type: 'effectScatter',
-            coordinateSystem: 'geo',
-            data: provinceData,
-            symbolSize: 5,
-            label: {
-              formatter: '{b}',
-              position: 'bottom',
-              show: false
-            },
-            itemStyle: {
-              color: 'rgba(100,149,237,0.7)'
-            },
-            rippleEffect: {
-              scale: 6,
-              number: 2,
-              period: 1.5,
-              color: 'rgba(25,25,112,0.9)',
-              brushType: 'fill'
-            },
-            zlevel: 2
-          },
-          {
             name: 'porLine',
             type: 'lines',
             effect: {
@@ -428,12 +391,12 @@ export default {
               constantSpeed: 50,
               trailLength: 0.2,
               color: 'rgba(255,255,255,0.3)',
-              symbolSize: 4
+              symbolSize: 2
             },
             lineStyle: {
               normal: {
                 color: '#ffa022',
-                width: 1,
+                width: 0,
                 opacity: 0.03,
                 curveness: 0.4
               }
@@ -578,19 +541,22 @@ export default {
           this.currentFeature = null
         }
       })
+
+      setTimeout(() => {
+        this.drawThreeLayerData(upsErrorArr)
+      }, 1500)
     },
-    drawThreeLayerData() {
+    drawThreeLayerData(cObjArr) {
       const threeLayer = this.mapDom.getLayer('three')
-      for (const key in this.geoCoordMap) {
-        const Coordinate = this.geoCoordMap[key]
-        threeLayer.addMesh(new LightPillar(new maptalks.Coordinate(Coordinate), {
+      cObjArr.forEach(item => {
+        threeLayer.addMesh(new LightPillar(new maptalks.Coordinate(item.coords), {
           minZoom: 6,
           maxZoom: 12,
-          width: 30,
+          width: 15,
           height: Math.ceil(70 * Math.random()) + 30,
-          color: '#6495ED'
+          color: '#e54d42'
         }, threeLayer))
-      }
+      })
     },
     findFeatureByName(name) {
       for (let i = 0; i < this.regionPolygons.length; i++) {
